@@ -18,15 +18,13 @@ namespace It_Supporter.DataContext
         public DbSet<Comments> Comments { get; set; }
 
         public DbSet<TechnicalEvents> TechnicalEvents {set; get;}
-
-        public DbSet<formTechUser> formTechUsers {set; get;}
-
+        public DbSet<formTechUsers> formTechUsers {set; get;}
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+                  
         }
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);

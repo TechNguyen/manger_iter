@@ -65,6 +65,7 @@ builder.Services.AddScoped<IUserAccount, UserAccountRepo>();
 builder.Services.AddScoped<IPost,Post>();
 builder.Services.AddScoped<IEmaiLService, SendEmail>();
 builder.Services.AddScoped<ITechnical, Technical>();
+
 builder.Services.Configure<SMTP>(builder.Configuration.GetSection("SMTPConfig"));
 builder.Services.AddDbContext<ThanhVienContext>(options =>
 {

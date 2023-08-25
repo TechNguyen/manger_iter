@@ -271,3 +271,4 @@ E:\app\It-Supporter\bin\Debug\net7.0\Owin.dll
 E:\app\It-Supporter\bin\Debug\net7.0\Otp.NET.dll
 E:\app\It-Supporter\bin\Debug\net7.0\Microsoft.AspNet.SignalR.SystemWeb.dll
 E:\app\It-Supporter\bin\Debug\net7.0\Microsoft.Owin.Host.SystemWeb.dll
+E:\app\It-Supporter\obj\Debug\net7.0\It-Supporter.sourcelink.json

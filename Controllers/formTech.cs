@@ -1,3 +1,4 @@
+using System.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,22 +25,23 @@ namespace It_Supporter.Controllers
 
         }
         [HttpPost("create")]
-        [ProducesResponseType(200, Type = typeof(ProducerResAddPost))]
-        public async Task<IActionResult> createForm([FromQuery] int idTech, [FromBody] formTechUser formTechUser) {
+        [ProducesResponseType(200, Type = typeof(formTechUsers))]
+        public async Task<IActionResult> createForm([FromQuery] int id, [FromBody] formTechUsers formTechUser) {
             try {
-                await _technical.CreateFormUser(idTech,formTechUser);
-                  ProducerResAddPost result = new ProducerResAddPost {
+                formTechUser.IdTech = id;
+                var userform = await _technical.CreateFormUser(formTechUser);
+                ProducerResAddPost result = new ProducerResAddPost {
                     returncode = 200,
                     returnmessage = "Phieu cua " + formTechUser.username + " da duoc them"
                 };
-                return Ok(result);
+                return Ok(userform);
             } catch (Exception ex) {
-                return NotFound(ex.Message);
+                return NotFound(ex);
             }
         }
         // get so luong
         [HttpGet("{idTech}")]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<formTechUser>))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<formTechUsers>))]
         public async Task<IActionResult> getformTech(int idTech) {
             try {
                 var listForm = await _technical.getTechUser(idTech);
@@ -50,6 +52,16 @@ namespace It_Supporter.Controllers
         }
 
 
-
+        // cap nhat trang thai
+        [HttpPut("{phone}")]
+        [ProducesResponseType(200, Type =  typeof(formTechUsers))]
+        public async Task<IActionResult> Updatestate(string phone, [FromQuery] string state) {
+            try {
+                var user = await _technical.updateStatus(phone, state);
+                return Ok(user);
+            } catch (Exception ex) {
+                return NotFound(ex.Message);
+            }
+        }
     }
 }

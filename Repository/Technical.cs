@@ -38,23 +38,31 @@ namespace It_Supporter.Repository
             return false;
         }
 
-
-
-        public async Task<bool> CreateFormUser(int id, formTechUser formTechUser) {
-            if(await TechEnventsExit(id)) {
-                _thanhVienContext.formTechUsers.Add(formTechUser);
+        //formtechUser
+        public async Task<bool> CreateFormUser(formTechUsers formTech) {
+            try {
+                _thanhVienContext.formTechUsers.Add(formTech);
                 await _thanhVienContext.SaveChangesAsync();
                 return true;
+            } catch {
+                return false;
             }
-            return false; 
         }
-
-        public async Task<IEnumerable<formTechUser>> getTechUser(int idTech) {
-            return _thanhVienContext.formTechUsers.Where(p => p.IdTech == idTech).ToList();
+        public async Task<ICollection<formTechUsers>> getTechUser(int id) {
+            return _thanhVienContext.formTechUsers.Where(p => p.IdTech == id).ToList();
         }
-        public async Task<bool> TechEnventsExit(int id) {
-           
-              return  _thanhVienContext.TechnicalEvents.Any(p => p.IdTech == id);            
+        public async Task<formTechUsers> updateStatus(string phone, string state) {
+            var user = _thanhVienContext.formTechUsers.Where(p => p.phonenumber == phone).FirstOrDefault();
+            try {
+                user.status = state;
+                await _thanhVienContext.SaveChangesAsync();
+                return user;
+            } catch {
+                return null;
+            }
+        }
+        public bool TechEnventsExit(int id) {
+            return  _thanhVienContext.TechnicalEvents.Any(p => p.IdTech == id);            
         }
     }
 }

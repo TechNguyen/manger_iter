@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using It_Supporter.Models;
+using Microsoft.EntityFrameworkCore.Update.Internal;
 
 namespace It_Supporter.Interfaces
 {
@@ -11,11 +12,12 @@ namespace It_Supporter.Interfaces
         Task<TechnicalEvents> createTech(TechnicalEvents technicalEvent);
         Task<IEnumerable<TechnicalEvents>> getAllTech();
         Task<bool> UpdateTech(int id , TechnicalEvents technicalEvents);
-        Task<bool> CreateFormUser(int id, formTechUser formTechUser);
+        Task<bool> CreateFormUser(formTechUsers formTech) ;
 
-
-         Task<IEnumerable<formTechUser>> getTechUser(int idTech) ;
-        Task<bool> TechEnventsExit(int id);
+        Task<ICollection<formTechUsers>> getTechUser(int id);
+        //update trang thai cap nhat
+        Task<formTechUsers> updateStatus(string phone, string state);
+        bool TechEnventsExit(int id);
 
 
     }

@@ -60,14 +60,5 @@ namespace It_Supporter.Controllers
                 return NotFound(ex.Message);
             }
         }
-
-        [HttpGet("techCount")]
-        public async Task<IActionResult> statistical([FromQuery] int IdTech) {
-            try {
-                return Ok();
-            } catch(Exception ex) {
-                return NotFound(ex.Message);
-            }
-        } 
     }
 }

@@ -10,6 +10,6 @@ namespace It_Supporter.Models
         public int countDevice {set; get;}
         public int completedDevice {set; get;}
         public int FixingDevice {set; get;}
-        public IEnumerable<formTechUser> formTechUsers {set; get;} 
+        public IEnumerable<formTechUsers> formTechUsers {set; get;} 
     }
 }
