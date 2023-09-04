@@ -3,6 +3,7 @@ using It_Supporter.Interfaces;
 using It_Supporter.Models;
 using It_Supporter.realtime;
 using It_Supporter.Repository;
+using It_Supporter.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -30,6 +31,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
+
+
+
+builder.Services.AddCors(options =>
+    {
+        options.AddDefaultPolicy(
+            builder =>
+            {
+                builder.WithOrigins("https://localhost:5100", "http://localhost:3000")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+                }
+            );
+        }
+    );
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -65,6 +81,9 @@ builder.Services.AddScoped<IUserAccount, UserAccountRepo>();
 builder.Services.AddScoped<IPost,Post>();
 builder.Services.AddScoped<IEmaiLService, SendEmail>();
 builder.Services.AddScoped<ITechnical, Technical>();
+builder.Services.AddScoped<ISendingMesage, messageProducer>();
+builder.Services.AddScoped<INotiFication, NotificationRep>();
+builder.Services.AddScoped<ICacheService, CacheService>();
 
 builder.Services.Configure<SMTP>(builder.Configuration.GetSection("SMTPConfig"));
 builder.Services.AddDbContext<ThanhVienContext>(options =>
@@ -93,5 +112,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.UseCors();
 
 app.Run();

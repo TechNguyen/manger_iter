@@ -22,7 +22,7 @@ namespace It_Supporter.Controllers
         }
         //layu danh sach tat ca tahnh vien
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<ThanhVien>))]
         [Produces("application/json")]
 

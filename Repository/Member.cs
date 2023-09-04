@@ -1,6 +1,7 @@
 ﻿using It_Supporter.DataContext;
 using It_Supporter.Interfaces;
 using It_Supporter.Models;
+using It_Supporter.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -18,27 +19,45 @@ namespace It_Supporter.Repository
     public class Member : IMember
     {
         private readonly ThanhVienContext _context;
+        private readonly ICacheService _cacheService;
     
-        public Member(ThanhVienContext context)
+        public Member(ThanhVienContext context, ICacheService cacheService)
         {
             _context = context;
+            _cacheService = cacheService;
         }
 
         public ProducerResponseMember GetThanhViens(int page)
         {
             var pageResult = 10f;
             var pageCount = Math.Ceiling(_context.THANHVIEN.Count() /  pageResult);
+
+
+            var cacheDataMember = _cacheService.GetData<List<ThanhVien>>($"member/{page}");
+
+            if(cacheDataMember != null && cacheDataMember.Count() > 0) {
+                
+                return new ProducerResponseMember
+                {
+                    data = cacheDataMember,
+                    curentPage = page,
+                    pageSize = (int)pageResult,
+                    totalPage = (int)pageCount
+                };
+            }
             var Members = _context.THANHVIEN.Skip((page - 1) * (int)pageResult)
                                             .Take((int)pageResult)
                                             .ToList();
+            var expraiseTime = DateTime.Now.AddMinutes(30);
+            _cacheService.SetData<List<ThanhVien>>($"member/{page}", Members, expraiseTime);
             var response = new ProducerResponseMember
             {
-                thanhViens = Members,
+                data = Members,
                 curentPage = page,
                 pageSize = (int)pageResult,
                 totalPage = (int)pageCount
             };
-            return (response);
+            return response;
         }
         // tim kiem thanh vien
         public ThanhVien GetMember(string mtv)
@@ -48,7 +67,17 @@ namespace It_Supporter.Repository
         // tiim kiiem theo khoa
         public ICollection<ThanhVien> GetThanhVienKhoa(string khoahoc)
         {
-            return _context.THANHVIEN.Where(p => p.Khoahoc == $"K{khoahoc}").ToList();
+            var cacheData = _cacheService.GetData<ICollection<ThanhVien>>("member");
+            if(cacheData != null && cacheData.Count() > 0) {
+                return cacheData;
+            }
+            //caching redis memmber
+            cacheData = _context.THANHVIEN.Where(p => p.Khoahoc == $"K{khoahoc}").ToList();
+            //set exsprisetime
+            var expriseTime = DateTimeOffset.Now.AddMinutes(30);
+            _cacheService.SetData<ICollection<ThanhVien>>($"member{khoahoc}", cacheData, expriseTime);
+            return cacheData;
+
         }
         //tao 1 thanh vien
         public bool CreateNewMember(string mtv, string tentv, string khoahoc, string nganhhoc, string sodt, string ngaysinh, string diachi, string chucvu, string email, int namvaohoc)
@@ -72,7 +101,10 @@ namespace It_Supporter.Repository
                     Email = email,
                     namvaohoc = namvaohoc
                 };
+
+                var exprirationTime = DateTime.Now.AddMinutes(30);
                 _context.Add(newMember);
+                _cacheService.SetData<ThanhVien>($"member{newMember.MaTV}", newMember, exprirationTime);
                 _context.SaveChanges();
                 return true;
             }

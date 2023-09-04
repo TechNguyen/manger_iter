@@ -20,6 +20,7 @@ namespace It_Supporter.DataContext
         public DbSet<TechnicalEvents> TechnicalEvents {set; get;}
         public DbSet<formTechUsers> formTechUsers {set; get;}
         
+        public DbSet<Notification> Notification {set;get;}
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
