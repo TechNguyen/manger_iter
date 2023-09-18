@@ -76,7 +76,7 @@ namespace It_Supporter.Repository
             //set exsprisetime
             var expriseTime = DateTimeOffset.Now.AddMinutes(30);
             _cacheService.SetData<ICollection<ThanhVien>>($"member{khoahoc}", cacheData, expriseTime);
-            return cacheData;
+            return cacheData; 
 
         }
         //tao 1 thanh vien
@@ -103,7 +103,7 @@ namespace It_Supporter.Repository
                 };
 
                 var exprirationTime = DateTime.Now.AddMinutes(30);
-                _context.Add(newMember);
+                _context.THANHVIEN.Add(newMember);
                 _cacheService.SetData<ThanhVien>($"member{newMember.MaTV}", newMember, exprirationTime);
                 _context.SaveChanges();
                 return true;
@@ -146,6 +146,7 @@ namespace It_Supporter.Repository
             } else
             {
                 _context.THANHVIEN.Remove(_thanhvien);
+                _cacheService.RemoveData($"member{mtv}");
                 _context.SaveChanges();
                 return true;
             }

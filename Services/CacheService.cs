@@ -35,7 +35,6 @@ namespace It_Supporter.Services
             }
             return false;
         }
-
         public object RemoveData(string key)
         {
             var _exits = _cachedatabase.KeyExists(key);
