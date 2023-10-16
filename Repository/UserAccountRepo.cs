@@ -46,7 +46,7 @@ namespace It_Supporter.Repository
                         issuer: builder["Jwt:Issuer"],
                         audience: builder["Jwt:Audience"],
                         claims: claims,
-                        expires: DateTime.UtcNow.AddDays(3),
+                        expires: DateTime.UtcNow.AddHours(1),
                         notBefore: DateTime.UtcNow,
                         signingCredentials: new SigningCredentials(
                             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder["Jwt:Key"])),

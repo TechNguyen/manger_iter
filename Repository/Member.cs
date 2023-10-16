@@ -8,6 +8,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
+using NRedisStack.Literals.Enums;
 using System.ComponentModel;
 using System.Data;
 using System.Globalization;
@@ -39,6 +40,8 @@ namespace It_Supporter.Repository
                 
                 return new ProducerResponseMember
                 {
+                    statuscode = 200,
+                    message = "Get member successfully!",
                     data = cacheDataMember,
                     curentPage = page,
                     pageSize = (int)pageResult,
@@ -52,6 +55,8 @@ namespace It_Supporter.Repository
             _cacheService.SetData<List<ThanhVien>>($"member/{page}", Members, expraiseTime);
             var response = new ProducerResponseMember
             {
+                statuscode = 200,
+                message = "Get member succesfully!",
                 data = Members,
                 curentPage = page,
                 pageSize = (int)pageResult,
@@ -80,37 +85,20 @@ namespace It_Supporter.Repository
 
         }
         //tao 1 thanh vien
-        public bool CreateNewMember(string mtv, string tentv, string khoahoc, string nganhhoc, string sodt, string ngaysinh, string diachi, string chucvu, string email, int namvaohoc)
+        public async Task<bool> CreateNewMember(ThanhVien thanhVien)
         {
-            if (mtv == "" || tentv == "" || khoahoc == "" || nganhhoc == "" || ngaysinh == "" || sodt == "" || diachi == "" || chucvu == "" || email == "")
+            if (thanhVien.MaTV.Trim() == "" || thanhVien.TenTv.Trim() == "" || thanhVien.Khoahoc.Trim() == "" || thanhVien.Nganhhoc.Trim() == "" || thanhVien.SoDT.Trim() == "" || thanhVien.DiaChi.Trim() == "" || thanhVien.Chucvu.Trim() == "" || thanhVien.Email.Trim() == "")
             {
                 return false;
             } else
             {
-                var datetime = DateTime.Parse(ngaysinh);
-                var newMember = new ThanhVien()
-                {
-                    MaTV = mtv,
-                    TenTv = tentv,
-                    Khoahoc = khoahoc,
-                    Nganhhoc = nganhhoc,
-                    SoDT = sodt,
-                    NgaySinh = datetime,
-                    DiaChi = diachi,
-                    Chucvu = chucvu,
-                    Email = email,
-                    namvaohoc = namvaohoc
-                };
-
                 var exprirationTime = DateTime.Now.AddMinutes(30);
-                _context.THANHVIEN.Add(newMember);
-                _cacheService.SetData<ThanhVien>($"member{newMember.MaTV}", newMember, exprirationTime);
-                _context.SaveChanges();
+                _context.THANHVIEN.Add(thanhVien);
+                _cacheService.SetData<ThanhVien>($"member{thanhVien.MaTV}", thanhVien, exprirationTime);
+                _context.SaveChangesAsync();
                 return true;
             }
         }
-
-
         //Update thong tin
         public bool UpdateMemberInfor(string mtv, ThanhVien thanhvien)
         {
@@ -206,6 +194,33 @@ namespace It_Supporter.Repository
         public bool MemBerExit(string mtv)
         {
             return _context.THANHVIEN.Any(p => p.MaTV == mtv);
+        }
+
+        public async Task<bool> ApprovedMemberOld(string khoa)
+        {
+            try {
+                var dsThanhVien = _context.THANHVIEN.Where(p => p.Khoahoc == khoa).ToList();
+                foreach(var tv in dsThanhVien) {
+                    tv.deleted = 1; 
+                }
+                _context.SaveChangesAsync();
+                return true; 
+            } catch (Exception ex) {
+                return false;
+            }
+        }
+
+        public async Task<bool> ApprovedNewMember(string khoa)
+        {
+            try {
+                var dsThanhVien = _context.THANHVIEN.Where(p => p.Khoahoc == khoa).ToList();
+                foreach(var tv in dsThanhVien) {
+                    tv.deleted = 0;
+                }
+                return true;
+            } catch (Exception ex) {
+                return false;
+            }
         }
     }
 }

@@ -20,12 +20,13 @@ namespace It_Supporter.Models
         [StringLength(10)]
         [ForeignKey("MaTV")]
         public string MaTV { get; set; }
-
         [Required]
-        public string Role { get; set; }
+        [Column(TypeName = "varchar(50)")]
+        public string? Role { get; set; }
+        [Column(TypeName = "int")]
+        public int? forgetOtp {set; get;}
 
-        public int forgetOtp {set; get;}
         [DataType(DataType.DateTime)]
-        public DateTime createat {set; get;}
+        public DateTime? createat {set; get;}
     }
 }

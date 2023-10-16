@@ -1,4 +1,6 @@
-﻿using It_Supporter.DataContext;
+﻿using System.Net;
+using It_Supporter.DataContext;
+using It_Supporter.DataRes;
 using It_Supporter.Interfaces;
 using It_Supporter.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -8,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace It_Supporter.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class ThanhvienController : ControllerBase
     {
         private readonly ILogger _logger;
@@ -79,17 +81,16 @@ namespace It_Supporter.Controllers
 
 
         //them moi 1 thanh vien
-        [HttpPost]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-        public IActionResult CreateMember([FromQuery] string mtv, [FromQuery] string tentv, [FromQuery] string khoahoc, [FromQuery] string nganhhoc, [FromQuery] string sodt, [FromQuery] string ngaysinh, [FromQuery] string diachi, [FromQuery] string chucvu, [FromQuery] string email, [FromQuery] int namvaohoc)
+        [Authorize(Roles = "Admin")]
+        [HttpPost("create")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> CreateMember([FromForm] ThanhVien thanhVien)
         {
-            if (!_member.CreateNewMember(mtv, tentv, khoahoc, nganhhoc, sodt, ngaysinh, diachi, chucvu, email, namvaohoc))
-            {
-                return BadRequest(ModelState);
-            } else
-            {
-                return Ok(_member.GetMember(mtv));
+            try {
+                var rs = await _member.CreateNewMember(thanhVien);
+                return Ok(rs);
+            } catch (Exception ex) {
+                return BadRequest(ex.Message);
             }
         }
 
@@ -141,7 +142,7 @@ namespace It_Supporter.Controllers
                 return Ok("Successfully Delete!");
             }
         }
-        [HttpGet("/dashboard")]
+        [HttpGet("dashboard")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         // count for admin
@@ -154,6 +155,52 @@ namespace It_Supporter.Controllers
             }
             return Ok(result);
         }
+        // approve member to old member
+        [Authorize(Roles = "Admin")]
+        [HttpPost("approved")]
+        public async Task<IActionResult> Approve([FromForm] string khoa) {
+            try {
+                var checkapprove = await _member.ApprovedMemberOld(khoa); 
+                if(checkapprove) {
+                    ApproveMemberRes approveMemberRes = new ApproveMemberRes {
+                        statuscode = 200,
+                        Message = "Approve member to old member succesfully!",
+                    };
+                    return Ok(approveMemberRes); 
+                } else {
+                    ApproveMemberRes approveMemberRes = new ApproveMemberRes {
+                        statuscode = 400,
+                        Message = "Error when approve member!"
+                    };
+                    return Ok(approveMemberRes); 
+                }
+            } catch (Exception ex) {
+                return NotFound(ex.Message);
+            }
+        }
+        //approve member to tv
+        [Authorize(Roles = "Admin")]
+        [HttpPost("approve-member")]
+        public async Task<IActionResult> ApproveNewMember([FromForm] string khoa) {
+            try {
+                var checkapprove = await _member.ApprovedMemberOld(khoa); 
+                if(checkapprove) {
+                    ApproveMemberRes approveMemberRes = new ApproveMemberRes {
+                        statuscode = 200,
+                        Message = "Approve new member succesfully!",
+                    };
+                    return Ok(approveMemberRes); 
+                } else {
+                    ApproveMemberRes approveMemberRes = new ApproveMemberRes {
+                        statuscode = 400,
+                        Message = "Error when approve member!"
+                    };
+                    return Ok(approveMemberRes); 
+                }
+            } catch (Exception ex) {
+                return NotFound(ex.Message);
+            }
+        } 
 
     }
 }

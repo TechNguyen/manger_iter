@@ -8,9 +8,11 @@ namespace It_Supporter.Interfaces
         ThanhVien GetMember(string mtv);
         bool MemBerExit(string mtv);
         ICollection<ThanhVien> GetThanhVienKhoa(string khoahoc);
-        bool CreateNewMember(string mtv, string tentv, string khoahoc, string nganhhoc, string sodt, string ngaysinh, string diachi, string chucvu, string emai, int namvaohoc);
+        Task<bool> CreateNewMember(ThanhVien thanhVien);
         bool UpdateMemberInfor(string mtv, ThanhVien thanhvien);
         bool DeleteMember(string mtv);
+        Task<bool> ApprovedMemberOld(string khoa);
+        Task<bool> ApprovedNewMember(string khoa);
         List<inforNumber> GetInforNumber();
     }
 }

@@ -12,7 +12,7 @@ using OtpNet;
 namespace It_Supporter.Controllers
 {
     [ApiController]
-    [Route("/api/[controller]")]
+    [Route("/api/v1/[controller]")]
     public class UserAccountController : ControllerBase
     {
         private readonly ILogger<UserAccountController> _logger;

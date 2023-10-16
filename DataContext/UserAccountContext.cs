@@ -17,7 +17,6 @@ namespace It_Supporter.DataContext
         {
             base.OnModelCreating(modelBuilder);
         }
-
     }
 }
 
