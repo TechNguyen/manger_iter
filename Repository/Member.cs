@@ -32,10 +32,7 @@ namespace It_Supporter.Repository
         {
             var pageResult = 10f;
             var pageCount = Math.Ceiling(_context.THANHVIEN.Count() /  pageResult);
-
-
             var cacheDataMember = _cacheService.GetData<List<ThanhVien>>($"member/{page}");
-
             if(cacheDataMember != null && cacheDataMember.Count() > 0) {
                 
                 return new ProducerResponseMember
@@ -85,18 +82,21 @@ namespace It_Supporter.Repository
 
         }
         //tao 1 thanh vien
-        public async Task<bool> CreateNewMember(ThanhVien thanhVien)
+        public async Task<ThanhVien> CreateNewMember(ThanhVien thanhVien)
         {
             if (thanhVien.MaTV.Trim() == "" || thanhVien.TenTv.Trim() == "" || thanhVien.Khoahoc.Trim() == "" || thanhVien.Nganhhoc.Trim() == "" || thanhVien.SoDT.Trim() == "" || thanhVien.DiaChi.Trim() == "" || thanhVien.Chucvu.Trim() == "" || thanhVien.Email.Trim() == "")
             {
-                return false;
+                return null;
             } else
             {
+                if(thanhVien.deleted == null) {
+                    thanhVien.deleted = 0;
+                }
                 var exprirationTime = DateTime.Now.AddMinutes(30);
                 _context.THANHVIEN.Add(thanhVien);
                 _cacheService.SetData<ThanhVien>($"member{thanhVien.MaTV}", thanhVien, exprirationTime);
                 _context.SaveChangesAsync();
-                return true;
+                return thanhVien;
             }
         }
         //Update thong tin
@@ -215,7 +215,7 @@ namespace It_Supporter.Repository
             try {
                 var dsThanhVien = _context.THANHVIEN.Where(p => p.Khoahoc == khoa).ToList();
                 foreach(var tv in dsThanhVien) {
-                    tv.deleted = 0;
+                    tv.Chucvu = "TV";
                 }
                 return true;
             } catch (Exception ex) {

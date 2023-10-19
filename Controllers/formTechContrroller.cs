@@ -12,7 +12,7 @@ using It_Supporter.Services;
 namespace It_Supporter.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class formTech : ControllerBase
     {
         private readonly ILogger _logger;
@@ -36,8 +36,8 @@ namespace It_Supporter.Controllers
                 formTechUser.IdTech = id;
                 var userform = await _technical.CreateFormUser(formTechUser);
                 ProducerResAddPost result = new ProducerResAddPost {
-                    returncode = 200,
-                    returnmessage = "Phieu cua " + formTechUser.username + " da duoc them"
+                    statuscode = 200,
+                    message = "Phieu cua " + formTechUser.username + " da duoc them"
                 };
                 _sendingMesage.SendingMessage<formTechUsers>(formTechUser);
                 return Ok(userform);

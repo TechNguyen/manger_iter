@@ -6,9 +6,8 @@ using It_Supporter.Models;
 
 namespace It_Supporter.DataRes
 {
-    public class ApproveMemberRes
+    public class ProducerResComment : ProducerResponse
     {
-        public int statuscode {set; get;}
-        public string Message {set; get;}
+        public Comments comments {set; get;} 
     }
 }

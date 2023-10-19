@@ -1,16 +1,28 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using NuGet.Packaging.Signing;
 
 namespace It_Supporter.Models
 {
     public class Posts
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Column(TypeName = "int")]
+        public int? id { get; set; }
         [Required]
-        public int Id { get; set; }
-        [DataType(DataType.DateTime)]
-        [Required]
-        public DateTime CreatePost { set; get; }
-        public string Content { get; set; }
+        [Column( TypeName = "char(10)")]
+        public string authorId {get;set;}
+        [Column(TypeName = "ntext")]
+        public string? content {get;set;}
+        [Column(TypeName = "datetime")]
+        public DateTime? createat {set; get;} = DateTime.Now;
+        [Column(TypeName = "datetime")]
+        public DateTime? updateat {set; get;}
+        [Column(TypeName = "datetime")]
+        public DateTime? deleteat {set; get;}
+        [Column(TypeName = "tinyint")]
+        public int? deleted {set;get;} = 0;
     }
 }

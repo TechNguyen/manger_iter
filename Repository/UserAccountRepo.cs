@@ -25,6 +25,7 @@ namespace It_Supporter.Repository
         public string Login(Login login, IConfiguration builder)
         {
             var tokenstring = string.Empty;
+            AuthResult authResult = new AuthResult();
             if (login.username != null && login.password != null)
             {
                 var account = GetUserAccounts(login.username, login.password);
@@ -52,7 +53,6 @@ namespace It_Supporter.Repository
                             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder["Jwt:Key"])),
                             SecurityAlgorithms.HmacSha256)
                     );
-
                     tokenstring = new JwtSecurityTokenHandler().WriteToken(token);
                     return tokenstring;
                 }

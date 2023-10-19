@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace It_Supporter.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class NotificationController : ControllerBase
     {
          private ThanhVienContext _context;

@@ -43,5 +43,8 @@ namespace It_Supporter.Models
 		public string? Ban {set; get;}
 		[Column(TypeName = "tinyint")]
 		public int? deleted {set; get;} = 0;
+
+
+
     }
 }

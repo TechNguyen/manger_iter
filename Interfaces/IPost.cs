@@ -5,11 +5,12 @@ namespace It_Supporter.Interfaces
 {
     public interface IPost
     {
-        ProducerResAddPost addPost(IConfiguration builder, string context);
-        ProducerResAddPost hidenPost(int PostId, IConfiguration builder);
+        //admin + member
+        Task<bool> addNewPost(Posts post);
+        Task<bool> hidenPost(int PostId);
+        Task<bool> showPost(int PostId);
 
-        ProducerResAddPost showPost(int PostId, IConfiguration builder);
-        
-        ICollection<Posts> sortPost(DateTime fromdate, DateTime todate, IConfiguration builder);
+        // admin  
+        Task<ICollection<Posts>> sortPost(DateSortPost dateSortPost);
     }
 }

@@ -1,15 +1,35 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace It_Supporter.Models
 {
     public class Comments
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int?  id {set; get;}
         [Required]
-        public int Id { get; set; }
+        [Column(TypeName = "char(10)")]
+        public string authoId {set; get;}
         [Required]
-        [DataType(DataType.DateTime)]
-        public int CreatedComment { get; set; }
-        public string Content { get; set; }
+        [Column(TypeName = "int")]
+        public int postId {set; get;}
+        [Column(TypeName = "datetime")]
+        public DateTime? createat {set; get;} = DateTime.Now;
+        [Column(TypeName = "datetime")]
+        public DateTime? deleteat {set; get;} = null;
+        [Required]
+        [Column(TypeName = "ntext")]
+        public string content {set; get;}
+        [Column(TypeName = "int")]
+        public int? deleted {set; get;} = 0;
+        [Column(TypeName = "int")]
+        public int? parentId {set; get;}
     }
 }

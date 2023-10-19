@@ -83,6 +83,7 @@ builder.Services.AddScoped<IEmaiLService, SendEmail>();
 builder.Services.AddScoped<ITechnical, Technical>();
 builder.Services.AddScoped<ISendingMesage, messageProducer>();
 builder.Services.AddScoped<INotiFication, NotificationRep>();
+builder.Services.AddScoped<IComment, CommentRepo>(); 
 builder.Services.AddScoped<ICacheService, CacheService>();
 
 builder.Services.Configure<SMTP>(builder.Configuration.GetSection("SMTPConfig"));

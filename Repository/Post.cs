@@ -5,6 +5,10 @@ using It_Supporter.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using System.Data;
+using Microsoft.Build.Framework;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 
 namespace It_Supporter.Repository
 {
@@ -16,139 +20,78 @@ namespace It_Supporter.Repository
             _context = context;
         }
 
-        public ProducerResAddPost addPost(IConfiguration builder, string context)
+        public async Task<bool> addNewPost(Posts post)
         {
-            SqlConnection connection = new SqlConnection();
-            connection.ConnectionString = builder.GetConnectionString("DefaultConnection");
-            connection.Open();
-
-            string procedurename = "dbo.SP_addPost";
-
-            var content = new SqlParameter("@content", SqlDbType.NVarChar)
-            {
-                Direction = ParameterDirection.Input,
-                Value = context
-            };
-            using (SqlCommand command = new SqlCommand(procedurename, connection))
-            {
-                command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.Add(content);
-                command.ExecuteReader();
-
-                ProducerResAddPost result = new ProducerResAddPost()
-                {
-                    returncode = 200,
-                    returnmessage = "Add a post successfully!"
+            try {  
+                if(post.deleted == null) {
+                    post.deleted = 0;
+                }
+                if(post.createat == null) {
+                    post.createat = DateTime.Now;
+                }
+                Posts newpost = new Posts {
+                    authorId = post.authorId,
+                    content = post.content,
+                    deleteat = post.deleteat,
+                    updateat = post.updateat,
+                    deleted = post.deleted,
+                    createat = post.createat
                 };
-                connection.Close();
-                return result;
+                _context.Posts.Add(newpost);
+                _context.SaveChanges();
+                return true;
+            } catch (Exception ex) {
+                return false;
             }
         }
         // an di 1 post
-        public ProducerResAddPost hidenPost(int PostId, IConfiguration builder)
+        public async Task<bool> hidenPost(int PostId)
         {
-            SqlConnection connection = new SqlConnection();
-            connection.ConnectionString = builder.GetConnectionString("DefaultConnection");
-            connection.Open();
-            if(!_context.Posts.Any(p => p.Id == PostId))
-            {
-                return new ProducerResAddPost();
-            }
-            string procedurename = "dbo.SP_hidenPost";
-            var postId = new SqlParameter("@PostId", SqlDbType.Int)
-            {
-                Direction = ParameterDirection.Input,
-                Value = PostId
-            };
-            using (SqlCommand command = new SqlCommand(procedurename,connection))
-            {
-                command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.Add(postId);
-                command.ExecuteNonQuery();
-                ProducerResAddPost reshidenPost = new ProducerResAddPost()
-                {
-                    returncode = 200,
-                    returnmessage = $"Post {PostId} was hiden successfully!"
-                };
-                connection.Close();
-                return reshidenPost;
+            try {
+                var rs = _context.Posts.Where(p => p.id.Equals(PostId)).FirstOrDefault();
+                rs.deleted = 1;
+                _context.SaveChangesAsync();
+                return true; 
+            } catch (Exception ex) {
+                return false; 
             }
         }
 
         // hien lai 1 bai viet
-        public ProducerResAddPost showPost(int PostId, IConfiguration builder)
+        public async Task<bool> showPost(int PostId)
         {
-            SqlConnection connection = new SqlConnection();
-            connection.ConnectionString = builder.GetConnectionString("DefaultConnection");
-            connection.Open();
-            string procedurename = "dbo.SP_showPost";
-            var postId = new SqlParameter("@PostId", SqlDbType.Int) { 
-                Direction = ParameterDirection.Input,
-                Value = PostId
-            };
+            try {
+                var rs = _context.Posts.FirstOrDefault(p => p.id.Equals(PostId));
+                rs.deleted = 0;
+                _context.SaveChangesAsync();
+                return true;
+            } catch(Exception ex) {
+                return false;
+            }
 
-            using (SqlCommand command = new SqlCommand(procedurename, connection))
-            {
-                command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.Add(postId);
+        }
 
-
-                int rowaffected = command.ExecuteNonQuery();
-                ProducerResAddPost resultshowpost = new ProducerResAddPost();
-                if (rowaffected > 0)
-                {
-                    resultshowpost.returncode = 200;
-                    resultshowpost.returnmessage = $"PostId {PostId} show successfully!";
-                    
-                } else
-                {
-                    resultshowpost.returncode = 401 ;
-                    resultshowpost.returnmessage = $"PostId {PostId} cann't be found!";
-                }
-                connection.Close();
-                return resultshowpost;
+        public async Task<ICollection<Posts>> sortPost(DateSortPost dateSortPost)
+        {
+            try {
+                var respondata = await _context.Posts.Where(p => DateTime.Compare(p.createat.Value,dateSortPost.fromdate.Value) >= 0)
+                                                    .Where(p => DateTime.Compare(p.createat.Value,dateSortPost.todate.Value) <= 0)
+                                                    .Where(p => p.deleted == 0)
+                                                    .ToListAsync();
+                return respondata;
+            } catch(Exception ex) {
+                return null;
             }
         }
 
-        // loc bai viet theo ngay thang
-        public ICollection<Posts> sortPost(DateTime fromdate, DateTime todate, IConfiguration builder) {
-            ICollection<Posts> result = new List<Posts>();
-            SqlConnection connection = new SqlConnection();
-            connection.ConnectionString = builder.GetConnectionString("DefaultConnection");
-            connection.Open();
-            string procedurename = "dbo.SP_sortPostByDate";
-           
-            var fromdateime = new SqlParameter("@fromdate", SqlDbType.DateTime) {
-                Direction = ParameterDirection.Input,
-                Value = fromdate
-            };
-            var todateime = new SqlParameter("@todate", SqlDbType.DateTime) {
-                Direction = ParameterDirection.Input,
-                Value = todate
-            };
-            using (SqlCommand command = new SqlCommand(procedurename,connection))
-            {
-                command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.Add(fromdateime);
-                command.Parameters.Add(todateime);
-                //return table
-                using (SqlDataAdapter adapter = new SqlDataAdapter(command)) {
-                    DataTable table = new DataTable();
-                    adapter.Fill(table);
-                    foreach (DataRow item in table.Rows)
-                    {
-                       Posts post = new Posts {
-                            Id = Int32.Parse(item["Id"].ToString()),
-                            CreatePost = DateTime.Parse(item["CreatePost"].ToString()),
-                            Content = item["Content"].ToString()
-                        };
-                        result.Add(post);
-                    }
-                    return result;
-                }        
+        //Managed Post;
+        public async Task<ICollection<Posts>> managed()  {
+            try {   
+                var result = _context.Posts.Where(p => p.deleted == 0).ToList();
+                return result; 
+            } catch(Exception ex) {
+                return null;
             }
-
-
         }
     }
 }

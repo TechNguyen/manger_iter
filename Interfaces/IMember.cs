@@ -8,7 +8,7 @@ namespace It_Supporter.Interfaces
         ThanhVien GetMember(string mtv);
         bool MemBerExit(string mtv);
         ICollection<ThanhVien> GetThanhVienKhoa(string khoahoc);
-        Task<bool> CreateNewMember(ThanhVien thanhVien);
+        Task<ThanhVien> CreateNewMember(ThanhVien thanhVien);
         bool UpdateMemberInfor(string mtv, ThanhVien thanhvien);
         bool DeleteMember(string mtv);
         Task<bool> ApprovedMemberOld(string khoa);

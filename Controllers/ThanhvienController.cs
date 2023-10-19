@@ -11,6 +11,7 @@ namespace It_Supporter.Controllers
 {
     [ApiController]
     [Route("api/v1/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class ThanhvienController : ControllerBase
     {
         private readonly ILogger _logger;
@@ -24,10 +25,9 @@ namespace It_Supporter.Controllers
         }
         //layu danh sach tat ca tahnh vien
         [HttpGet]
-        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<ThanhVien>))]
         [Produces("application/json")]
-
         public IActionResult GetThanhViens([FromQuery] int page)
         {
             if (page < 1)
@@ -87,8 +87,14 @@ namespace It_Supporter.Controllers
         public async Task<IActionResult> CreateMember([FromForm] ThanhVien thanhVien)
         {
             try {
-                var rs = await _member.CreateNewMember(thanhVien);
-                return Ok(rs);
+                ProducerResCreate result = new ProducerResCreate();
+                ThanhVien rs = await _member.CreateNewMember(thanhVien);
+                if(rs != null) {
+                    result.statuscode = 200;
+                    result.message = "Create new member successfully!";
+                    result.data = rs;
+                }
+                return Ok(result);
             } catch (Exception ex) {
                 return BadRequest(ex.Message);
             }
@@ -183,7 +189,7 @@ namespace It_Supporter.Controllers
         [HttpPost("approve-member")]
         public async Task<IActionResult> ApproveNewMember([FromForm] string khoa) {
             try {
-                var checkapprove = await _member.ApprovedMemberOld(khoa); 
+                var checkapprove = await _member.ApprovedNewMember(khoa); 
                 if(checkapprove) {
                     ApproveMemberRes approveMemberRes = new ApproveMemberRes {
                         statuscode = 200,

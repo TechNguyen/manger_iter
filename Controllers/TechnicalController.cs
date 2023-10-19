@@ -13,7 +13,7 @@ namespace It_Supporter.Controllers
 {
     [ApiController]
     [Authorize(Roles = "Admin")]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class TechnicalController : ControllerBase
     {
         private readonly ILogger _logger;

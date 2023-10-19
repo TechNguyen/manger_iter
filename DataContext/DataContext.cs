@@ -23,8 +23,25 @@ namespace It_Supporter.DataContext
         public DbSet<Notification> Notification {set;get;}
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-                  
+               modelBuilder.Entity<Posts>()
+                .HasOne<ThanhVien>()
+                .WithMany()
+                .HasForeignKey(p => p.authorId)
+                .OnDelete(DeleteBehavior.Restrict);
+                modelBuilder.Entity<Posts>()
+                    .Ignore(e => e.id)
+                    .Property(p => p.id)
+                    .UseIdentityColumn()
+                    .ValueGeneratedOnAdd();
+                modelBuilder.Entity<Posts>()
+                    .Property(p => p.createat)
+                    .HasDefaultValueSql("Current_Timestamp");
+                modelBuilder.Entity<Comments>()
+                    .Ignore(e => e.id)
+                    .Property(e => e.id)
+                    .UseIdentityColumn()
+                    .ValueGeneratedOnAdd();
+
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

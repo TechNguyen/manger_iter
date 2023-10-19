@@ -44,7 +44,6 @@ namespace It_Supporter.Controllers
         public IActionResult LoginAccount([FromBody] Login login)
         {
             var token = _userAccount.Login(login, _configuration);
-
             if(token == "")
             {
                 return NotFound(ModelState);
@@ -58,8 +57,8 @@ namespace It_Supporter.Controllers
             try {
                 await _emailservice.SendToTest(userEmailOption, _configuration);
                 ProducerResAddPost result = new ProducerResAddPost {
-                    returncode = 200,
-                    returnmessage = "Send Email Successfully!"
+                    statuscode = 200,
+                    message = "Send Email Successfully!"
                 };
                 return Ok(result);
             } catch (Exception ex) {
@@ -79,17 +78,17 @@ namespace It_Supporter.Controllers
             var otpcheck = _emailservice.CheckOtp(check, _configuration);
             ProducerResAddPost resultcheck = new ProducerResAddPost();
             if(otpcheck.statusCode == 200) {
-                resultcheck.returncode = 200;
-                resultcheck.returnmessage = "Otp right";
+                resultcheck.statuscode = 200;
+                resultcheck.message = "Otp right";
                 return Ok(resultcheck);
             }
             else {
                 if(otpcheck.statusCode == 400) {
-                    resultcheck.returncode = 400;
-                    resultcheck.returnmessage = "Otp fault";
+                    resultcheck.statuscode = 400;
+                    resultcheck.message = "Otp fault";
                 } else {
-                    resultcheck.returncode = 405;
-                    resultcheck.returnmessage = "Otp het han";
+                    resultcheck.statuscode = 405;
+                    resultcheck.message = "Otp het han";
                 }
                 return NotFound(resultcheck);
             };
@@ -102,12 +101,12 @@ namespace It_Supporter.Controllers
             var isChange = _emailservice.ResetPassword(otpSend ,_configuration);
             ProducerResAddPost resultchange = new ProducerResAddPost();
             if(isChange) {
-                resultchange.returncode = 200;
-                resultchange.returnmessage = "Change Password successfully";
+                resultchange.statuscode = 200;
+                resultchange.message = "Change Password successfully";
                 return Ok(resultchange);
             } else {
-                resultchange.returncode = 400;
-                resultchange.returnmessage = "Change Password fault!";
+                resultchange.statuscode = 400;
+                resultchange.message = "Change Password fault!";
                 return NotFound(resultchange);
             }
         } 
