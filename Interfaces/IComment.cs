@@ -9,9 +9,9 @@ namespace It_Supporter.Interfaces
 {
     public interface IComment
     {
-        Task<bool> createComment(Comments cmt);
+        Task<Comments> createComment(Comments cmt);
         //delete one comment 
         Task<bool> deleteComment(int CommentId);
-        Task<bool> updateComment(string content, int CommentId);
+        Task<Comments> updateComment(string commentup, int CommentId);
     }
 }

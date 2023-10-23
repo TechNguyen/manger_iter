@@ -13,10 +13,11 @@ namespace It_Supporter.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int?  id {set; get;}
+        [Column(TypeName = "int")]
+        public int? id {set; get;}
         [Required]
         [Column(TypeName = "char(10)")]
-        public string authoId {set; get;}
+        public string authorId {set; get;}
         [Required]
         [Column(TypeName = "int")]
         public int postId {set; get;}
@@ -31,5 +32,8 @@ namespace It_Supporter.Models
         public int? deleted {set; get;} = 0;
         [Column(TypeName = "int")]
         public int? parentId {set; get;}
+        
+        [Column(TypeName = "datetime")]
+        public DateTime? updateat { set; get;} = null;
     }
 }

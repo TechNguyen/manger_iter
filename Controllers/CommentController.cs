@@ -26,14 +26,14 @@ namespace It_Supporter.Controllers
             _thanhVienContext = thanhVienContext;
         }
 
-        [Authorize(Roles = "Admin, Member")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Member")]
+        // [Authorize(Roles = "Admin, Member")]
+        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Member")]
         [HttpPost("create")]
         public async Task<IActionResult> addComment([FromForm] Comments comment) {
             try {
                 var rs = await _comment.createComment(comment);  
                 ProducerResComment resComment = new ProducerResComment();
-                if(rs) {
+                if(rs != null) {
                     resComment.statuscode = 200;
                     resComment.message = "Create new comment successfully!";
                     return Ok(resComment);
@@ -46,25 +46,25 @@ namespace It_Supporter.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [Authorize(Roles = "Admin, Member")]
-        [HttpPatch("update")]
+        // [Authorize(Roles = "Admin, Member")]
+        [HttpPut("update")]
         public async Task<IActionResult> update([FromQuery] int CommentId, [FromBody] string content) {
             try {
                 var rs = await _comment.updateComment(content,CommentId);
                 ProducerResponse producer = new ProducerResponse();
-                if(rs) {
+                if(rs != null) {
                     producer.statuscode = 200;
                     producer.message = "Update comment successfully!";
                 } else {
                     producer.statuscode = 404;
                     producer.message = "Update comment unsuccessfully!";
                 }
-                return Ok(producer);
+                return Ok(rs);
             } catch(Exception ex) {
                 return BadRequest(ex.Message);
             }
         } 
-        [Authorize(Roles = "Admin, Member")]
+        // [Authorize(Roles = "Admin, Member")]
         [HttpDelete("delete")]
         public async Task<IActionResult> delete([FromQuery]  int CommentId) {
             try { 

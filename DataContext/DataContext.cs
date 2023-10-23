@@ -36,12 +36,14 @@ namespace It_Supporter.DataContext
                 modelBuilder.Entity<Posts>()
                     .Property(p => p.createat)
                     .HasDefaultValueSql("Current_Timestamp");
+                // modelBuilder.Entity<Comments>()
+                //     .Ignore(e => e.id)
+                //     .Property(p => p.id)
+                //     .UseIdentityColumn();
+                   
                 modelBuilder.Entity<Comments>()
-                    .Ignore(e => e.id)
-                    .Property(e => e.id)
-                    .UseIdentityColumn()
-                    .ValueGeneratedOnAdd();
-
+                    .Property(p => p.createat)
+                    .HasDefaultValueSql("Current_Timestamp");
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

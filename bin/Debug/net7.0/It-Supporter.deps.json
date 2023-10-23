@@ -8,6 +8,8 @@
     ".NETCoreApp,Version=v7.0": {
       "It-Supporter/1.0.0": {
         "dependencies": {
+          "Google.Apis.Oauth2.v2": "1.62.0.1869",
+          "Google.Cloud.Storage.V1": "4.6.0",
           "Json.Net": "1.0.33",
           "Microsoft.AspNet.SignalR": "2.4.3",
           "Microsoft.AspNet.SignalR.Core": "2.4.3",
@@ -63,6 +65,105 @@
           "lib/netstandard2.0/Azure.Identity.dll": {
             "assemblyVersion": "1.6.0.0",
             "fileVersion": "1.600.22.20503"
+          }
+        }
+      },
+      "Google.Api.Gax/4.4.0": {
+        "dependencies": {
+          "Microsoft.Bcl.AsyncInterfaces": "6.0.0",
+          "Newtonsoft.Json": "13.0.3"
+        },
+        "runtime": {
+          "lib/netstandard2.1/Google.Api.Gax.dll": {
+            "assemblyVersion": "4.4.0.0",
+            "fileVersion": "4.4.0.0"
+          }
+        }
+      },
+      "Google.Api.Gax.Rest/4.4.0": {
+        "dependencies": {
+          "Google.Api.Gax": "4.4.0",
+          "Google.Apis.Auth": "1.62.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "7.0.0"
+        },
+        "runtime": {
+          "lib/netstandard2.1/Google.Api.Gax.Rest.dll": {
+            "assemblyVersion": "4.4.0.0",
+            "fileVersion": "4.4.0.0"
+          }
+        }
+      },
+      "Google.Apis/1.62.0": {
+        "dependencies": {
+          "Google.Apis.Core": "1.62.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Google.Apis.dll": {
+            "assemblyVersion": "1.62.0.0",
+            "fileVersion": "1.62.0.0"
+          }
+        }
+      },
+      "Google.Apis.Auth/1.62.0": {
+        "dependencies": {
+          "Google.Apis": "1.62.0",
+          "Google.Apis.Core": "1.62.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Google.Apis.Auth.PlatformServices.dll": {
+            "assemblyVersion": "1.62.0.0",
+            "fileVersion": "1.62.0.0"
+          },
+          "lib/netstandard2.0/Google.Apis.Auth.dll": {
+            "assemblyVersion": "1.62.0.0",
+            "fileVersion": "1.62.0.0"
+          }
+        }
+      },
+      "Google.Apis.Core/1.62.0": {
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.3"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Google.Apis.Core.dll": {
+            "assemblyVersion": "1.62.0.0",
+            "fileVersion": "1.62.0.0"
+          }
+        }
+      },
+      "Google.Apis.Oauth2.v2/1.62.0.1869": {
+        "dependencies": {
+          "Google.Apis": "1.62.0",
+          "Google.Apis.Auth": "1.62.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Google.Apis.Oauth2.v2.dll": {
+            "assemblyVersion": "1.62.0.1869",
+            "fileVersion": "1.62.0.1869"
+          }
+        }
+      },
+      "Google.Apis.Storage.v1/1.60.0.2981": {
+        "dependencies": {
+          "Google.Apis": "1.62.0",
+          "Google.Apis.Auth": "1.62.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Google.Apis.Storage.v1.dll": {
+            "assemblyVersion": "1.60.0.2981",
+            "fileVersion": "1.60.0.2981"
+          }
+        }
+      },
+      "Google.Cloud.Storage.V1/4.6.0": {
+        "dependencies": {
+          "Google.Api.Gax.Rest": "4.4.0",
+          "Google.Apis.Storage.v1": "1.60.0.2981"
+        },
+        "runtime": {
+          "lib/netstandard2.1/Google.Cloud.Storage.V1.dll": {
+            "assemblyVersion": "4.6.0.0",
+            "fileVersion": "4.6.0.0"
           }
         }
       },
@@ -2846,6 +2947,62 @@
       "sha512": "sha512-EycyMsb6rD2PK9P0SyibFfEhvWWttdrYhyPF4f41uzdB/44yQlV+2Wehxyg489Rj6gbPvSPgbKq0xsHJBhipZA==",
       "path": "azure.identity/1.6.0",
       "hashPath": "azure.identity.1.6.0.nupkg.sha512"
+    },
+    "Google.Api.Gax/4.4.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-vkqxzz54dRdl3uUmz0hOhMfR9EjGrWJI+SeOl3UC1Gr/mHfHOwYiRPnJbub+77/xS0lAJBs02iOh3ay9zgzW4Q==",
+      "path": "google.api.gax/4.4.0",
+      "hashPath": "google.api.gax.4.4.0.nupkg.sha512"
+    },
+    "Google.Api.Gax.Rest/4.4.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-L4sJluVTLMy5cqFR439c2UNuWU20Wqh6yatY455rRwRlfdQlCc7Z4TdYphj2qH3cLo5NCPGQM37r/uQDLzF3eA==",
+      "path": "google.api.gax.rest/4.4.0",
+      "hashPath": "google.api.gax.rest.4.4.0.nupkg.sha512"
+    },
+    "Google.Apis/1.62.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-7K6DuMmRVz+7QDEJgAEYicKGRhjkNaKhkaf+qoqdLEzvVmEtIUW49+2gON1EdbYjLEjexVb5TGgtzn+/WTNFwg==",
+      "path": "google.apis/1.62.0",
+      "hashPath": "google.apis.1.62.0.nupkg.sha512"
+    },
+    "Google.Apis.Auth/1.62.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-gGhgv2xmFrDAmXj5Ei5LW1pLHxqAsj8crwOd0vhrdXJm3mIRm3vd+MfZ9ApbqvsaAMyCIlZBRhyT5mwPJnWNYw==",
+      "path": "google.apis.auth/1.62.0",
+      "hashPath": "google.apis.auth.1.62.0.nupkg.sha512"
+    },
+    "Google.Apis.Core/1.62.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-UV2vs58DyrQ/roZ59Mmny/5aE/2w5ww9Svyn6+ThXeq3Jw2RdOP1C57ez1V8+1KwY0ivPPIIp6e5jO6K5n5F+A==",
+      "path": "google.apis.core/1.62.0",
+      "hashPath": "google.apis.core.1.62.0.nupkg.sha512"
+    },
+    "Google.Apis.Oauth2.v2/1.62.0.1869": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-JxFKGr/XNKuuS/FzJZVPY/Ax71tZ4cAW5uwRYB8+UVwyIcYeVB64kc7fEjb+a7PqpSCIAxbICZmOqQMy0VTdXQ==",
+      "path": "google.apis.oauth2.v2/1.62.0.1869",
+      "hashPath": "google.apis.oauth2.v2.1.62.0.1869.nupkg.sha512"
+    },
+    "Google.Apis.Storage.v1/1.60.0.2981": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-YcUvDcg0hV5hAFPYwLwg15pmObxjJEhH/9mkiNxpQ/vYfwPfIH/s2PeIEzdnDkQlE4kPyoJdA9cIYIXnC1s5Qg==",
+      "path": "google.apis.storage.v1/1.60.0.2981",
+      "hashPath": "google.apis.storage.v1.1.60.0.2981.nupkg.sha512"
+    },
+    "Google.Cloud.Storage.V1/4.6.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-pNV9H+LElfumLs7k8GDf8vltQ+fpq59oklCncBu5FPTzmwNGryT3VMaTU8+xV3VnWN44vNyPYz1tiOiF0F/5Xw==",
+      "path": "google.cloud.storage.v1/4.6.0",
+      "hashPath": "google.cloud.storage.v1.4.6.0.nupkg.sha512"
     },
     "Humanizer/2.14.1": {
       "type": "package",

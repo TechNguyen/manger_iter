@@ -93,5 +93,15 @@ namespace It_Supporter.Repository
                 return null;
             }
         }
+
+        private async Task<bool> UploadPost(FileUpload file)
+        {
+            try {
+                string FileName = $"{Path.GetFileNameWithoutExtension(file.fileName)}_{System.DateTime.Now.ToString("dd--mm--yyyy-h-mm-tt")}{Path.GetExtension(file.files.FileName)}"
+                return true;
+            } catch(Exception ex) {
+                return false;
+            }
+        }
     }
 }
