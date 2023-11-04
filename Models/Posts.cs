@@ -24,5 +24,7 @@ namespace It_Supporter.Models
         public DateTime? deleteat {set; get;}
         [Column(TypeName = "tinyint")]
         public int? deleted {set;get;} = 0;
+        [Column(TypeName = "varchar(300)")]
+        public string? urlImage {set; get;}
     }
 }

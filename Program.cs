@@ -12,6 +12,9 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+
+
 // Add services to the container.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
@@ -28,10 +31,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 }
 );
 
+
+
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddDistributedSqlServerCache(options => {
+    options.ConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.SchemaName = "dbo";
+    options.TableName = "Session";
+});
 builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
 
+builder.Services.AddSession(options => {
+    options.IdleTimeout = TimeSpan.FromMinutes(60);
+});
 
 
 builder.Services.AddCors(options =>
@@ -76,8 +92,8 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 
-builder.Services.AddScoped<IMember, Member>();
 builder.Services.AddScoped<IUserAccount, UserAccountRepo>();
+builder.Services.AddScoped<IMember, Member>();
 builder.Services.AddScoped<IPost,Post>();
 builder.Services.AddScoped<IEmaiLService, SendEmail>();
 builder.Services.AddScoped<ITechnical, Technical>();
@@ -85,6 +101,7 @@ builder.Services.AddScoped<ISendingMesage, messageProducer>();
 builder.Services.AddScoped<INotiFication, NotificationRep>();
 builder.Services.AddScoped<IComment, CommentRepo>(); 
 builder.Services.AddScoped<ICacheService, CacheService>();
+builder.Services.AddScoped<ITokenService, UserAccountRepo>();
 
 builder.Services.Configure<SMTP>(builder.Configuration.GetSection("SMTPConfig"));
 builder.Services.AddDbContext<ThanhVienContext>(options =>
@@ -98,7 +115,10 @@ builder.Services.AddDbContext<UserAccountContext>(options =>
 
 builder.Services.AddSignalR();
 
+
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -106,6 +126,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseSession();
+
+app.UseHttpLogging();
 
 app.UseHttpsRedirection();
 

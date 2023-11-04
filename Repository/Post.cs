@@ -9,18 +9,30 @@ using Microsoft.Build.Framework;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Storage.V1;
+using Google.Apis.Storage.v1.Data;
+using Microsoft.AspNetCore.Identity;
 
 namespace It_Supporter.Repository
 {
     public class Post : IPost
     {
         private readonly ThanhVienContext _context;
-        public Post(ThanhVienContext context)
+        private readonly Microsoft.Extensions.Hosting.IHostingEnvironment _env;
+        private string apiKey = "AIzaSyAjJChu_wQMel-dk0m_KXzZ7rx4SXaXwwg";
+        private string authDomain= "it-supporter-34e94.firebaseapp.com";
+        private string projectId = "it-supporter-34e94";
+        private string storageBucket ="it-supporter-34e94.appspot.com";
+
+        private readonly string AuthEmail = "ndt13102003@gmail.com";
+        private readonly string AuthPass = "leluuly1306";
+        public Post(ThanhVienContext context, Microsoft.Extensions.Hosting.IHostingEnvironment env)
         {
             _context = context;
+            _env = env;
         }
-
-        public async Task<bool> addNewPost(Posts post)
+        public async Task<bool> addNewPost(PostsUpload post)
         {
             try {  
                 if(post.deleted == null) {
@@ -37,6 +49,11 @@ namespace It_Supporter.Repository
                     deleted = post.deleted,
                     createat = post.createat
                 };
+
+                if(post.fileUpload.files.Length > 0) {
+                    var _urlImage = await UploadPost(post.fileUpload);
+                    newpost.urlImage = _urlImage; 
+                }
                 _context.Posts.Add(newpost);
                 _context.SaveChanges();
                 return true;
@@ -94,14 +111,55 @@ namespace It_Supporter.Repository
             }
         }
 
-        private async Task<bool> UploadPost(FileUpload file)
+    private async Task<string> UploadToFireBase(string FileName) {
+        string foldername = "post";
+        string path = Path.Combine(_env.ContentRootPath, $"Upload\\{foldername}");
+        string filePath = Path.Combine(path,FileName);
+        var objectname = $"post_img/{FileName}";
+        var credentialPath = Path.Combine(_env.ContentRootPath,"configFirebase.json");
+        var credential = GoogleCredential.FromFile(credentialPath).CreateScoped("https://www.googleapis.com/auth/cloud-platform");
+
+        var storeClient = await StorageClient.CreateAsync(credential);
+
+        var uploadOptions = new UploadObjectOptions {
+            PredefinedAcl = PredefinedObjectAcl.PublicRead
+        };
+
+        using (FileStream fs = new FileStream(filePath,FileMode.Open))
         {
+            var task = await storeClient.UploadObjectAsync(storageBucket,objectname,null,fs,uploadOptions);
             try {
-                string FileName = $"{Path.GetFileNameWithoutExtension(file.fileName)}_{System.DateTime.Now.ToString("dd--mm--yyyy-h-mm-tt")}{Path.GetExtension(file.files.FileName)}"
-                return true;
-            } catch(Exception ex) {
-                return false;
+                return task.MediaLink;
+            } catch {
+                return null;
             }
+        }
+
+    }
+    public async Task<string> UploadPost(FileUpload file)
+    {
+        try {
+            string FileName = $"{Path.GetFileNameWithoutExtension(file.fileName)}_{DateTime.Now.ToString("dd-MM-yyyy-HH-mm-tt")}{Path.GetExtension(file.files.FileName)}";
+            string rootpath = $"Upload\\post";
+            string pathfile = Path.Combine(rootpath,FileName);
+            using (FileStream fs = new FileStream(Path.Combine(_env.ContentRootPath, pathfile), FileMode.Create))
+            {
+                file.files.CopyToAsync(fs);
+                fs.FlushAsync();
+            }
+            string downloadUrl = await UploadToFireBase(FileName);
+            if(downloadUrl != null) {
+                File.Delete(Path.Combine(_env.ContentRootPath, pathfile));
+            } 
+            return downloadUrl;
+        } catch(Exception ex) {
+            return null;
+        } 
+    }
+
+        public Task<Posts> GetPosts()
+        {
+            throw new NotImplementedException();
         }
     }
 }

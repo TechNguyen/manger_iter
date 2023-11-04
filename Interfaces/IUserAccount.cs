@@ -4,7 +4,8 @@ namespace It_Supporter.Interfaces
 {
     public interface IUserAccount
     {
-        UserAccount GetUserAccounts(string username,string password);
-        string Login(Login loginform, IConfiguration builder);
+        Task<UserAccount> GetUserAccounts(string username,string password);
+        Task<AuthResult> Login(Login login, IConfiguration builder);
+        Task<bool> createAccount(User user);
     }
 }

@@ -28,7 +28,7 @@ namespace It_Supporter.Controllers
         //tao 1 post
         [Authorize(Roles = "Admin, Member")]
         [HttpPost("create")]
-        public async Task<IActionResult> addPost([FromForm] Posts post)
+        public async Task<IActionResult> addPost([FromForm] PostsUpload post)
         {
             try {
                 var result = await _post.addNewPost(post);
@@ -107,5 +107,6 @@ namespace It_Supporter.Controllers
                 return BadRequest(ex.Message);
             }
         }
+    
     }
 }

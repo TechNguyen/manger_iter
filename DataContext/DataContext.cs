@@ -14,13 +14,12 @@ namespace It_Supporter.DataContext
         public DbSet<UserAccount> UserAccounts { get; set; }
 
         public DbSet<Posts> Posts { get; set; }
-
         public DbSet<Comments> Comments { get; set; }
-
-        public DbSet<TechnicalEvents> TechnicalEvents {set; get;}
-        public DbSet<formTechUsers> formTechUsers {set; get;}
-        
+         
         public DbSet<Notification> Notification {set;get;}
+        public DbSet<Images> Images {set;get;}
+        public DbSet<Machines> Machines {get; set;}
+        public DbSet<TechEvents> TechEvents {set; get;} 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
                modelBuilder.Entity<Posts>()
@@ -36,14 +35,21 @@ namespace It_Supporter.DataContext
                 modelBuilder.Entity<Posts>()
                     .Property(p => p.createat)
                     .HasDefaultValueSql("Current_Timestamp");
-                // modelBuilder.Entity<Comments>()
-                //     .Ignore(e => e.id)
-                //     .Property(p => p.id)
-                //     .UseIdentityColumn();
                    
                 modelBuilder.Entity<Comments>()
                     .Property(p => p.createat)
                     .HasDefaultValueSql("Current_Timestamp");
+
+                modelBuilder.Entity<Machines>()
+                    .Property(e => e.deleted)
+                    .HasDefaultValueSql("0");
+                
+                modelBuilder.Entity<Machines>()
+                    .Property(p => p.finished)
+                    .HasDefaultValueSql("0");
+                modelBuilder.Entity<Machines>()
+                    .Property(e => e.serviceCharger)
+                    .HasDefaultValueSql("0.00");
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

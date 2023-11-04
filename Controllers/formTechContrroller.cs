@@ -27,47 +27,7 @@ namespace It_Supporter.Controllers
             _logger = logger;
             _sendingMesage = sendingMesage;
             _noti = noti;
-
         }
-        [HttpPost("create")]
-        [ProducesResponseType(200, Type = typeof(formTechUsers))]
-        public async Task<IActionResult> createForm([FromQuery] int id, [FromBody] formTechUsers formTechUser) {
-            try {
-                formTechUser.IdTech = id;
-                var userform = await _technical.CreateFormUser(formTechUser);
-                ProducerResAddPost result = new ProducerResAddPost {
-                    statuscode = 200,
-                    message = "Phieu cua " + formTechUser.username + " da duoc them"
-                };
-                _sendingMesage.SendingMessage<formTechUsers>(formTechUser);
-                return Ok(userform);
-            } catch (Exception ex) {
-                return NotFound(ex.Message);
-            }
-        }
-        // get so luong
-        [HttpGet("{idTech}")]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<formTechUsers>))]
-        public async Task<IActionResult> getformTech(int idTech) {
-            try {
-                var listForm = await _technical.getTechUser(idTech);
-                return Ok(listForm);
-            } catch(Exception ex) {
-                return NotFound(ex.Message);
-            }
-        }
-
-
-        // cap nhat trang thai
-        [HttpPut("{phone}")]
-        [ProducesResponseType(200, Type =  typeof(formTechUsers))]
-        public async Task<IActionResult> Updatestate(string phone, [FromQuery] string state) {
-            try {
-                var user = await _technical.updateStatus(phone, state);
-                return Ok(user);
-            } catch (Exception ex) {
-                return NotFound(ex.Message);
-            }
-        }
+      
     }
 }

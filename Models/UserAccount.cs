@@ -10,11 +10,9 @@ namespace It_Supporter.Models
         public string Username { get; set; }
         [Required]
         public string Password { get; set; }
-
         [Required]
         [StringLength(355)]
         public string Email { get; set; }
-
         [Key]
         [Required]
         [StringLength(10)]
@@ -28,5 +26,12 @@ namespace It_Supporter.Models
 
         [DataType(DataType.DateTime)]
         public DateTime? createat {set; get;}
+
+        [Column(TypeName = "varchar(300)")]
+        public string? AccessToken {set; get;}
+        [Column(TypeName = "varchar(300)")]
+        public string? RefreshToken {set;get;}
+        [Column(TypeName = "datetime")]
+        public DateTime? RefreshTokenExpireTime {set;get;}
     }
 }

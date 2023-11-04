@@ -8,61 +8,150 @@ using It_Supporter.DataContext;
 using It_Supporter.Interfaces;
 using It_Supporter.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.IdentityModel.Tokens;
+using NuGet.DependencyResolver;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
+
 
 namespace It_Supporter.Repository
 {
     public class Technical : ITechnical
     {
-        private readonly ThanhVienContext _thanhVienContext;
-        public Technical(ThanhVienContext thanhVienContext) {
-            _thanhVienContext = thanhVienContext;
+        private readonly ThanhVienContext _context;
+        private readonly HttpContext _http;
+        public Technical(ThanhVienContext context, IHttpContextAccessor http) {
+            _context = context;
+            _http = http.HttpContext;
+        }
+
+        public async Task<bool> addMachines(Machines addMachines)
+        {
+            try {
+                string MaTV = _http.Session.GetString("MaTV");
+                Console.WriteLine(MaTV);
+                if(!MaTV.IsNullOrEmpty()) {
+                    Machines newmachines = new Machines {
+                        customername = addMachines.customername,
+                        phonenumber = addMachines.phonenumber,
+                        machine_status = addMachines.machine_status,
+                        techId = addMachines.techId,
+                        services = addMachines.services,
+                        machinesgetat = addMachines.machinesgetat.ToLocalTime(),
+                        TesterId = addMachines.TesterId,
+                        Technical = addMachines.Technical,
+                    };
+                    //Machine_ThanhvVien
+                    _context.Machines.Add(newmachines);
+                    int rowAffected = _context.SaveChanges();
+                    return rowAffected > 0 ? true : false;
+                }
+                return false;
+            } catch {
+                return false;
+            }
+        }
+
+        public async Task<bool> assignMachines(int machinesId, string technicalId)
+        {
+            try {
+                var machines = _context.Machines.FirstOrDefault(p => p.id == machinesId);
+                machines.Technical = technicalId;
+                return _context.SaveChanges() > 0 ? true : false;
+            } catch {
+                return false;
+            }
         }
         // tao tech
-        public async Task<TechnicalEvents> createTech(TechnicalEvents techevent) {
-            _thanhVienContext.TechnicalEvents.Add(techevent);
-            await _thanhVienContext.SaveChangesAsync();
-            return techevent;
-        }
-        //get ra tech
-        public async Task<IEnumerable<TechnicalEvents>> getAllTech() {
-            var ListTech = _thanhVienContext.TechnicalEvents.ToList();
-            return ListTech;
-        } 
-
-        public async Task<bool> UpdateTech(int IdTech, TechnicalEvents technical) {
-            if(await _thanhVienContext.TechnicalEvents.FindAsync(IdTech) is TechnicalEvents techfound) {
-                _thanhVienContext.TechnicalEvents.Entry(techfound).CurrentValues.SetValues(technical);
-                await _thanhVienContext.SaveChangesAsync(); 
-                return true;
-            }
-            return false;
-        }
-
-        //formtechUser
-        public async Task<bool> CreateFormUser(formTechUsers formTech) {
+        public async Task<bool> create(TechEvents techEvents)
+        {
             try {
-                _thanhVienContext.formTechUsers.Add(formTech);
-                await _thanhVienContext.SaveChangesAsync();
+                TechEvents tech = new TechEvents {
+                    address = techEvents.address,
+                    timestart = techEvents.timestart.ToLocalTime(),
+                    timeend = techEvents.timeend.ToLocalTime(),
+                    techday = techEvents.techday,
+                    status = techEvents.status
+                };
+                _context.TechEvents.Add(tech);
+                int rowAffected = _context.SaveChanges();
+                if(rowAffected == 0) {
+                    return false;
+                } else return true;
+            } catch {
+                return false;
+            }
+        }
+
+        public async Task<bool> deleteMachines(List<int> machineIds)
+        {
+            try {
+                foreach(int i in machineIds) {
+                    var machines = _context.Machines.FirstOrDefault(p => p.id == i);
+                    machines.deleted = 1;
+                }
+                return _context.SaveChanges() > 0 ? true : false;
+            } catch {
+                return false;
+            }
+        }
+
+        public async Task<int?> machineTech(int idTech)
+        {
+            try {
+                int countMachines = _context.Machines.Where(p => p.techId == idTech).ToList().Count;
+                return countMachines;
+            } catch {
+                return null;
+            }
+        }
+
+
+        public async Task<decimal?> manager_money(int techId)
+        {
+            try {
+                List<Machines> machines = _context.Machines.Where(p => p.serviceCharger >= 0).ToList();
+                decimal total = 0;
+                foreach(var machine in machines) {
+                    total += machine.serviceCharger;
+                }
+                return total;
+            } catch {
+                return null;
+            }
+        }
+        public async Task<bool> restoreMachines(List<int> machinIds)
+        {
+            try {
+                foreach(int i in machinIds) {
+                    var item = _context.Machines.FirstOrDefault(p => p.id == i);
+                    item.deleted = 0;
+                }
+                return _context.SaveChanges() > 0 ? true : false;
+            } catch {
+                return false;
+            }
+        }
+        public async Task<bool> updateInfor(string key, int machineId)
+        {
+            try {
+
                 return true;
             } catch {
                 return false;
             }
         }
-        public async Task<ICollection<formTechUsers>> getTechUser(int id) {
-            return _thanhVienContext.formTechUsers.Where(p => p.IdTech == id).ToList();
-        }
-        public async Task<formTechUsers> updateStatus(string phone, string state) {
-            var user = _thanhVienContext.formTechUsers.Where(p => p.phonenumber == phone).FirstOrDefault();
+
+        public async Task<bool> UpdateStatusTechEv(int techId, string statusevents)
+        {
             try {
-                user.status = state;
-                await _thanhVienContext.SaveChangesAsync();
-                return user;
+                var techEvents =  _context.TechEvents.SingleOrDefault(p => p.id == techId);
+                techEvents.status = statusevents;
+                _context.SaveChanges();
+                return true;
             } catch {
-                return null;
+                return false;
             }
-        }
-        public bool TechEnventsExit(int id) {
-            return  _thanhVienContext.TechnicalEvents.Any(p => p.IdTech == id);            
         }
     }
 }

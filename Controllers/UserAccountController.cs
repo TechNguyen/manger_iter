@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.WebSockets;
 using OtpNet;
+using StackExchange.Redis;
+using It_Supporter.DataRes;
 
 namespace It_Supporter.Controllers
 {
@@ -37,18 +39,44 @@ namespace It_Supporter.Controllers
             _emailservice = emailservice;
         }
 
-        //login with user
-        [HttpPost("login")]
-        [ProducesResponseType(200, Type = typeof(string))]
-        [ProducesResponseType(400)]
-        public IActionResult LoginAccount([FromBody] Login login)
-        {
-            var token = _userAccount.Login(login, _configuration);
-            if(token == "")
-            {
-                return NotFound(ModelState);
+
+
+
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("create")]
+        public async Task<IActionResult> createAccount([FromBody] User user) {
+            try {
+                var rs = await _userAccount.createAccount(user);
+                ProducerResponse producer = new ProducerResponse();
+                if(rs) {
+                    producer.statuscode = 200;
+                    producer.message = "Create account successfuully!";
+                } else {
+                    producer.statuscode = 400;
+                    producer.message = "Create account unsuccessfully!";
+                }
+                return Ok(producer);
+            } catch (Exception ex) {
+                return BadRequest(ex.Message);
             }
-            return Ok(token);
+        }
+        //login with user
+        [AllowAnonymous]
+        [HttpPost("login")]
+        public async Task<IActionResult> LoginAccount([FromBody] Login login)
+        {
+            try {
+                var auth = await _userAccount.Login(login, _configuration);
+                AuthResult producer = new AuthResult();
+                producer.statuscode = 200;
+                producer.message = auth.message;
+                producer.AccessToken = auth.AccessToken;
+                producer.RefreshToken = auth.RefreshToken;
+                return Ok(producer);
+            } catch (Exception ex) {
+                return BadRequest(ex.Message);
+            }
         }
         // send Otp in Email
         [HttpPost("sendMail")]
@@ -71,10 +99,9 @@ namespace It_Supporter.Controllers
             var otp = _emailservice.GenerateOtp(secretkey);
             return Ok(otp);
         }
-
         [HttpPost("checkOtp")]
         [ProducesResponseType(200, Type = typeof(ProducerResAddPost))]
-        public  IActionResult CheckOtpGen([FromBody] checkOtp check ) {
+        public IActionResult CheckOtpGen([FromBody] checkOtp check ) {
             var otpcheck = _emailservice.CheckOtp(check, _configuration);
             ProducerResAddPost resultcheck = new ProducerResAddPost();
             if(otpcheck.statusCode == 200) {

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\WorkSpace\\Iot twitsoft\\It-Supporter\\It-Supporter.csproj": {}
+    "E:\\WorkSpace\\Back C#\\It-Supporter\\It-Supporter.csproj": {}
   },
   "projects": {
-    "E:\\WorkSpace\\Iot twitsoft\\It-Supporter\\It-Supporter.csproj": {
+    "E:\\WorkSpace\\Back C#\\It-Supporter\\It-Supporter.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\WorkSpace\\Iot twitsoft\\It-Supporter\\It-Supporter.csproj",
+        "projectUniqueName": "E:\\WorkSpace\\Back C#\\It-Supporter\\It-Supporter.csproj",
         "projectName": "It-Supporter",
-        "projectPath": "E:\\WorkSpace\\Iot twitsoft\\It-Supporter\\It-Supporter.csproj",
+        "projectPath": "E:\\WorkSpace\\Back C#\\It-Supporter\\It-Supporter.csproj",
         "packagesPath": "C:\\Users\\Acer\\.nuget\\packages\\",
-        "outputPath": "E:\\WorkSpace\\Iot twitsoft\\It-Supporter\\obj\\",
+        "outputPath": "E:\\WorkSpace\\Back C#\\It-Supporter\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -76,6 +76,10 @@
               "target": "Package",
               "version": "[7.0.5, )"
             },
+            "Microsoft.AspNetCore.Session": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
             "Microsoft.AspNetCore.SignalR.Client": {
               "target": "Package",
               "version": "[7.0.10, )"
@@ -95,6 +99,14 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[7.0.10, )"
+            },
+            "Microsoft.Extensions.Caching.Memory": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.Extensions.Caching.SqlServer": {
+              "target": "Package",
+              "version": "[7.0.13, )"
             },
             "Microsoft.IdentityModel.Tokens": {
               "target": "Package",

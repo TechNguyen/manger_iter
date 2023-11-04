@@ -124,14 +124,10 @@ namespace It_Supporter.Controllers
                 return Ok(_member.GetMember(mtv));
             }
         }
-
-
-
         //Xoa 1 thanh vien
         [HttpDelete("delete")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-
         public IActionResult DeleteMember([FromQuery] string mtv)
         {
             if (mtv == null)
@@ -206,7 +202,6 @@ namespace It_Supporter.Controllers
             } catch (Exception ex) {
                 return NotFound(ex.Message);
             }
-        } 
-
+        }
     }
 }
