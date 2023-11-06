@@ -12,7 +12,6 @@ namespace It_Supporter.Interfaces
         string GenerateAccessToken(IEnumerable<Claim> claims, IConfiguration builder, UserAccount account);
         string GenerateRefreshToken();
        Task<AuthResult> Refresh(RefreshToken rftoken, IConfiguration builder);
-
         ClaimsPrincipal GetClaimsPrincipalFromExpriseTime(string token);
     }
 }

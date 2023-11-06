@@ -102,6 +102,7 @@ builder.Services.AddScoped<INotiFication, NotificationRep>();
 builder.Services.AddScoped<IComment, CommentRepo>(); 
 builder.Services.AddScoped<ICacheService, CacheService>();
 builder.Services.AddScoped<ITokenService, UserAccountRepo>();
+builder.Services.AddScoped<IExcel, Member>();
 
 builder.Services.Configure<SMTP>(builder.Configuration.GetSection("SMTPConfig"));
 builder.Services.AddDbContext<ThanhVienContext>(options =>

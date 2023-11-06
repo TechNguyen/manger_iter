@@ -1,4 +1,8 @@
-﻿using It_Supporter.DataContext;
+﻿using DocumentFormat.OpenXml.Math;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
+using ExcelDataReader;
+using It_Supporter.DataContext;
 using It_Supporter.Interfaces;
 using It_Supporter.Models;
 using It_Supporter.Services;
@@ -9,23 +13,28 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using NRedisStack.Literals.Enums;
+using System;
 using System.ComponentModel;
 using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Net.WebSockets;
 
+
 namespace It_Supporter.Repository
 {
-    public class Member : IMember
+    public class Member : IMember, IExcel 
     {
         private readonly ThanhVienContext _context;
         private readonly ICacheService _cacheService;
     
-        public Member(ThanhVienContext context, ICacheService cacheService)
+
+        private readonly Microsoft.Extensions.Hosting.IHostingEnvironment _env;
+        public Member(ThanhVienContext context, ICacheService cacheService, Microsoft.Extensions.Hosting.IHostingEnvironment env)
         {
             _context = context;
             _cacheService = cacheService;
+            _env = env;
         }
 
         public ProducerResponseMember GetThanhViens(int page)
@@ -221,6 +230,87 @@ namespace It_Supporter.Repository
             } catch (Exception ex) {
                 return false;
             }
+        }
+
+        public DataTable ExportToExcel()
+        {
+            DataTable dt = new DataTable();
+            dt.TableName = "THANHVIEN";
+            dt.Columns.Add("MaTV", typeof(string));
+            dt.Columns.Add("TenTv", typeof(string));
+            dt.Columns.Add("Khoahoc", typeof(string));
+            dt.Columns.Add("Nganhhoc", typeof(string));
+            dt.Columns.Add("SoDT", typeof(string));
+            dt.Columns.Add("NgaySinh", typeof(DateTime));
+            dt.Columns.Add("DiaChi", typeof(string));
+            dt.Columns.Add("Email", typeof(string));
+            dt.Columns.Add("namvaohoc", typeof(int));
+            dt.Columns.Add("Ban", typeof(string));
+            var listMember = _context.THANHVIEN.Where(p => p.deleted == 0).ToList();
+
+            if(listMember.Count > 0) {
+                foreach (var member in listMember)
+                {
+                    dt.Rows.Add(member.MaTV,member.TenTv,member.Khoahoc,member.Nganhhoc,member.SoDT,member.NgaySinh,member.DiaChi,member.Email,member.namvaohoc,member.Ban);
+                }
+            }
+            return dt;
+        }
+
+        public async Task<bool> GenerrateExcel(IFormFile file)
+        {
+            string rootpath = $"Upload\\Files";
+            string pathfile = Path.Combine(rootpath, file.FileName);
+            using (FileStream fs = new FileStream(Path.Combine(_env.ContentRootPath, pathfile), FileMode.Create))
+            {
+                file.CopyToAsync(fs);
+                fs.FlushAsync();
+            }
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            using (var stream = File.Open(Path.Combine(_env.ContentRootPath, pathfile), FileMode.Open, FileAccess.Read))
+            {
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    var config = new ExcelDataSetConfiguration
+                    {
+                        ConfigureDataTable = _ => new ExcelDataTableConfiguration
+                        {
+                            UseHeaderRow = true
+                        }
+                    };
+                    var dataset = reader.AsDataSet(config);
+                    if (dataset.Tables.Count > 0)
+                    {
+                        foreach (DataTable table in dataset.Tables)
+                        {
+
+                            for(int i = 1;i < table.Rows.Count;i++)
+                            {
+
+                                ThanhVien tv = new ThanhVien()
+                                {
+                                   MaTV = table.Rows[i]["MaTv"].ToString(),
+                                   TenTv = table.Rows[i]["TenTv"].ToString(),
+                                   Khoahoc = table.Rows[i]["Khoa"].ToString(),
+                                   Nganhhoc = table.Rows[i]["Nganh"].ToString(),
+                                   SoDT = table.Rows[i]["SoDT"].ToString(),
+                                   NgaySinh = (DateTime)table.Rows[i]["NgaySinh"],
+                                   DiaChi = table.Rows[i]["Diachi"].ToString(),
+                                   Chucvu = table.Rows[i]["Chucvu"].ToString(),
+                                   Email = table.Rows[i]["Email"].ToString(),
+                                   namvaohoc =  int.Parse(table.Rows[i]["Nam"].ToString()),
+                                   Ban = null,
+                                   deleted = 0,
+                                   urlImage = null
+                                };
+                                _context.THANHVIEN.Add(tv);
+                            }
+                        }
+
+                    }
+                }
+            }
+            return _context.SaveChanges() > 0 ? true : false;
         }
     }
 }

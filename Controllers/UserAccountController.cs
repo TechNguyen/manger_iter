@@ -25,24 +25,21 @@ namespace It_Supporter.Controllers
 
         private UserAccountContext _UserAccountContext;
 
+        private readonly ITokenService _tokenService;
 
         private readonly IConfiguration _configuration;
 
         public int remainTiming {set;get;}
 
-        public UserAccountController(ILogger<UserAccountController> logger,IEmaiLService emailservice , IUserAccount userAccount, UserAccountContext _userAccountContext, IConfiguration configuration)
+        public UserAccountController(ILogger<UserAccountController> logger,IEmaiLService emailservice , IUserAccount userAccount, UserAccountContext _userAccountContext, IConfiguration configuration, ITokenService tokenservice)
         {
             _userAccount = userAccount;
             _logger = logger;
             _UserAccountContext = _userAccountContext;
             _configuration = configuration;
             _emailservice = emailservice;
+            _tokenService = tokenservice;
         }
-
-
-
-
-
         [Authorize(Roles = "Admin")]
         [HttpPost("create")]
         public async Task<IActionResult> createAccount([FromBody] User user) {
@@ -136,6 +133,23 @@ namespace It_Supporter.Controllers
                 resultchange.message = "Change Password fault!";
                 return NotFound(resultchange);
             }
-        } 
+        }
+
+
+        [HttpPost("token/refresh")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshToken refreshToken, IConfiguration configuration) {
+            try {
+                var rs = await _tokenService.Refresh(refreshToken, configuration);
+                AuthResult producer = new AuthResult();
+                producer.message = rs.message;
+                producer.statuscode = rs.statuscode;
+                producer.RefreshToken = rs.RefreshToken;
+                producer.AccessToken = rs.AccessToken;
+                producer.errors = rs.errors;
+                return Ok(producer);
+            } catch (Exception ex) {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

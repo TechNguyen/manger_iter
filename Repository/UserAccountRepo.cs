@@ -37,13 +37,13 @@ namespace It_Supporter.Repository
                 userAccount.Password = user.password;
                 userAccount.Email = user.Email;
                 userAccount.MaTV = user.MaTV;
+                userAccount.createat = DateTime.Now;
                 _context.UserAccount.Add(userAccount);
                 return _context.SaveChanges() > 0 ? true : false;
             } catch  {
                 return false;
             }
         }
-
         public string GenerateAccessToken(IEnumerable<Claim> claims, IConfiguration builder, UserAccount account)
         {
             claims.Append(new Claim(ClaimTypes.NameIdentifier, account.Username));
@@ -94,7 +94,6 @@ namespace It_Supporter.Repository
 
         public async  Task<UserAccount> GetUserAccounts(string username, string password)
         {
-
             try
             {
                 var user = await _context.UserAccount.Where(p => p.Username == username && p.Password == password).FirstAsync();
@@ -141,7 +140,7 @@ namespace It_Supporter.Repository
                 }
             } else {
                 authResult.statuscode = 400;
-                authResult.message = "Login unsuccessflllly!";
+                authResult.message = "Login unsuccessfully!";
             }
             return authResult;
         }

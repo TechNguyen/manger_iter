@@ -9,7 +9,6 @@ namespace It_Supporter.Models
 {
     public class User
     {
-
         [Required]
         [RegexStringValidator("^(?=.*[A-Z])(?=.*'\'d)(?=.*'\'W).{6,}$")]
         public string username {set; get;}

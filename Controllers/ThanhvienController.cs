@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using ClosedXML.Excel;
 using It_Supporter.DataContext;
 using It_Supporter.DataRes;
 using It_Supporter.Interfaces;
@@ -11,17 +12,20 @@ namespace It_Supporter.Controllers
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public class ThanhvienController : ControllerBase
     {
         private readonly ILogger _logger;
         private readonly IMember _member;
+
+        private readonly IExcel _excel;
         private ThanhVienContext _context;
-        public ThanhvienController(IMember member, ILogger<ThanhvienController> logger, ThanhVienContext context)
+        public ThanhvienController(IMember member, ILogger<ThanhvienController> logger, ThanhVienContext context, IExcel excel)
         {
             _member = member;
             _logger = logger;
             _context = context;
+            _excel = excel;
         }
         //layu danh sach tat ca tahnh vien
         [HttpGet]
@@ -203,5 +207,48 @@ namespace It_Supporter.Controllers
                 return NotFound(ex.Message);
             }
         }
+        [HttpGet("exportExcel")]
+        // exppor data to excel
+        public async Task<IActionResult> ExportToExcel() {
+            try {
+                var _datatable = _excel.ExportToExcel();
+                using (XLWorkbook wb = new XLWorkbook())
+                {
+                    wb.AddWorksheet(_datatable,"Members");
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        wb.SaveAs(ms);
+                        return File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Member.xls");
+                    }
+                }
+            } catch (Exception ex) {
+                return BadRequest(ex.Message); 
+            }
+        }
+
+
+        [HttpPost("importExcel")]
+        public async Task<IActionResult> ImportFileExcel(IFormFile file)
+        {
+            try
+            {
+                ProducerResponse producer = new ProducerResponse();
+                var rs = await _excel.GenerrateExcel(file);
+                if (rs)
+                {
+                    producer.statuscode = 200;
+                    producer.message = "Successfully import data member!";
+                } else
+                {
+                    producer.statuscode = 400;
+                    producer.message = "Error when import data member";
+                }
+                return Ok(producer);
+            } catch (Exception ex) {
+                return BadRequest(ex.Message);
+            }
+        }
     }
+
+
 }

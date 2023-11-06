@@ -849,3 +849,12 @@ E:\WorkSpace\Back C#\It-Supporter\obj\Debug\net7.0\It-Supporter.pdb
 E:\WorkSpace\Back C#\It-Supporter\obj\Debug\net7.0\It-Supporter.genruntimeconfig.cache
 E:\WorkSpace\Back C#\It-Supporter\obj\Debug\net7.0\ref\It-Supporter.dll
 E:\WorkSpace\Back C#\It-Supporter\bin\Debug\net7.0\Microsoft.Extensions.Caching.SqlServer.dll
+E:\WorkSpace\Back C#\It-Supporter\bin\Debug\net7.0\ClosedXML.dll
+E:\WorkSpace\Back C#\It-Supporter\bin\Debug\net7.0\DocumentFormat.OpenXml.dll
+E:\WorkSpace\Back C#\It-Supporter\bin\Debug\net7.0\ExcelNumberFormat.dll
+E:\WorkSpace\Back C#\It-Supporter\bin\Debug\net7.0\Irony.dll
+E:\WorkSpace\Back C#\It-Supporter\bin\Debug\net7.0\SixLabors.Fonts.dll
+E:\WorkSpace\Back C#\It-Supporter\bin\Debug\net7.0\System.IO.Packaging.dll
+E:\WorkSpace\Back C#\It-Supporter\bin\Debug\net7.0\XLParser.dll
+E:\WorkSpace\Back C#\It-Supporter\bin\Debug\net7.0\ExcelDataReader.dll
+E:\WorkSpace\Back C#\It-Supporter\bin\Debug\net7.0\ExcelDataReader.DataSet.dll
