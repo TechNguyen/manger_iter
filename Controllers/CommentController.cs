@@ -26,8 +26,8 @@ namespace It_Supporter.Controllers
             _thanhVienContext = thanhVienContext;
         }
 
-        // [Authorize(Roles = "Admin, Member")]
-        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Member")]
+        [Authorize(Roles = "Admin, Member")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin, Member")]
         [HttpPost("create")]
         public async Task<IActionResult> addComment([FromForm] Comments comment) {
             try {
@@ -46,7 +46,7 @@ namespace It_Supporter.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        // [Authorize(Roles = "Admin, Member")]
+        [Authorize(Roles = "Admin, Member")]
         [HttpPut("update")]
         public async Task<IActionResult> update([FromQuery] int CommentId, [FromBody] string content) {
             try {
@@ -63,8 +63,8 @@ namespace It_Supporter.Controllers
             } catch(Exception ex) {
                 return BadRequest(ex.Message);
             }
-        } 
-        // [Authorize(Roles = "Admin, Member")]
+        }
+        [Authorize(Roles = "Admin, Member")]
         [HttpDelete("delete")]
         public async Task<IActionResult> delete([FromQuery]  int CommentId) {
             try { 

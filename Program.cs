@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -101,7 +102,10 @@ builder.Services.AddScoped<ISendingMesage, messageProducer>();
 builder.Services.AddScoped<INotiFication, NotificationRep>();
 builder.Services.AddScoped<IComment, CommentRepo>(); 
 builder.Services.AddScoped<ICacheService, CacheService>();
+
 builder.Services.AddScoped<ITokenService, UserAccountRepo>();
+
+
 builder.Services.AddScoped<IExcel, Member>();
 
 builder.Services.Configure<SMTP>(builder.Configuration.GetSection("SMTPConfig"));
@@ -109,15 +113,22 @@ builder.Services.AddDbContext<ThanhVienContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
 builder.Services.AddDbContext<UserAccountContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
+
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+.AddEntityFrameworkStores<UserAccountContext>()
+.AddDefaultTokenProviders();
+
 
 builder.Services.AddSignalR();
 
 
 var app = builder.Build();
+
 
 
 
@@ -133,6 +144,9 @@ app.UseSession();
 app.UseHttpLogging();
 
 app.UseHttpsRedirection();
+
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

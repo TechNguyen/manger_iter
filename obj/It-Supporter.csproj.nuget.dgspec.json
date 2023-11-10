@@ -84,6 +84,18 @@
               "target": "Package",
               "version": "[7.0.10, )"
             },
+            "Microsoft.AspNetCore.Identity": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[7.0.13, )"
+            },
+            "Microsoft.AspNetCore.Identity.UI": {
+              "target": "Package",
+              "version": "[7.0.13, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[7.0.5, )"
@@ -117,6 +129,10 @@
               "version": "[7.0.0, )"
             },
             "Microsoft.Extensions.Caching.SqlServer": {
+              "target": "Package",
+              "version": "[7.0.13, )"
+            },
+            "Microsoft.Extensions.Identity.Stores": {
               "target": "Package",
               "version": "[7.0.13, )"
             },

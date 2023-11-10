@@ -7,17 +7,17 @@ using It_Supporter.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StackExchange.Redis;
 
 namespace It_Supporter.Controllers
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public class ThanhvienController : ControllerBase
     {
         private readonly ILogger _logger;
         private readonly IMember _member;
-
         private readonly IExcel _excel;
         private ThanhVienContext _context;
         public ThanhvienController(IMember member, ILogger<ThanhvienController> logger, ThanhVienContext context, IExcel excel)
@@ -28,17 +28,15 @@ namespace It_Supporter.Controllers
             _excel = excel;
         }
         //layu danh sach tat ca tahnh vien
-        [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<ThanhVien>))]
-        [Produces("application/json")]
-        public IActionResult GetThanhViens([FromQuery] int page)
+        [HttpGet("all")]
+        public async Task<IActionResult> GetThanhViens([FromQuery] int page)
         {
             if (page < 1)
             {
                 page = 1;
             }
             var data = _member.GetThanhViens(page);
+            Console.WriteLine(data);
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -87,7 +85,6 @@ namespace It_Supporter.Controllers
         //them moi 1 thanh vien
         [Authorize(Roles = "Admin")]
         [HttpPost("create")]
-        [ProducesResponseType(200)]
         public async Task<IActionResult> CreateMember([FromForm] ThanhVien thanhVien)
         {
             try {

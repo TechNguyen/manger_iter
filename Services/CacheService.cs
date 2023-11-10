@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,43 @@ namespace It_Supporter.Services
     {
         private IDatabase _cachedatabase;
         public CacheService() {
-            var redis = ConnectionMultiplexer.Connect("localhost:6379");
+
+            ConfigurationOptions options = new ConfigurationOptions {
+                EndPoints = {{"redis-14916.c1.ap-southeast-1-1.ec2.cloud.redislabs.com", 14916}},
+                User = "default",
+                Password = "esEi9Y9Hiuy9GO6O7duIJkqH4mWqTy3t",
+                // Ssl = true,
+                // SslProtocols = System.Security.Authentication.SslProtocols.Tls12,
+            };
+
+
+           
+            // options.CertificateSelection += delegate
+            // {
+            //     return new X509Certificate2("redis.pfx", "esEi9Y9Hiuy9GO6O7duIJkqH4mWqTy3t"); // use the password you specified for pfx file
+            // };
+            // options += ValidateServerCertificate;
+
+            // bool ValidateServerCertificate(
+            //         object sender,
+            //         X509Certificate? certificate,
+            //         X509Chain? chain,
+            //         SslPolicyErrors sslPolicyErrors)
+            // {
+            //     if (certificate == null) {
+            //         return false;       
+            //     }
+
+            //     var ca = new X509Certificate2("redis_ca.pem");
+            //     bool verdict = (certificate.Issuer == ca.Subject);
+            //     if (verdict) {
+            //         return true;
+            //     }
+            //     Console.WriteLine("Certificate error: {0}", sslPolicyErrors);
+            //     return false;
+            // }
+
+            var redis = ConnectionMultiplexer.Connect(options);
             _cachedatabase = redis.GetDatabase();
             var ft = _cachedatabase.FT();
             var json = _cachedatabase.JSON();

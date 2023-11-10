@@ -11,18 +11,16 @@ namespace It_Supporter.DataContext
         }
        
         public DbSet<ThanhVien> THANHVIEN { get; set; }
-        public DbSet<UserAccount> UserAccounts { get; set; }
-
         public DbSet<Posts> Posts { get; set; }
         public DbSet<Comments> Comments { get; set; }
-         
+        public DbSet<UserAccount> UserAccounts { get; set; }
         public DbSet<Notification> Notification {set;get;}
         public DbSet<Images> Images {set;get;}
         public DbSet<Machines> Machines {get; set;}
         public DbSet<TechEvents> TechEvents {set; get;} 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-               modelBuilder.Entity<Posts>()
+                modelBuilder.Entity<Posts>()
                 .HasOne<ThanhVien>()
                 .WithMany()
                 .HasForeignKey(p => p.authorId)
