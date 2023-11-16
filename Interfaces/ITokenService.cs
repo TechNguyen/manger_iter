@@ -10,8 +10,8 @@ namespace It_Supporter.Interfaces
 {
     public interface ITokenService
     {
-        //string generateaccesstoken(IEnumerable<Claim> claims, IConfiguration builder, UserAccount account);
-        //string generaterefreshtoken();
+        string GenerateAccessToken(IEnumerable<Claim> claims, IConfiguration builder);
+        string GenerateRefreshToken();
         //Task<AuthResult> refresh(RefreshToken rftoken, IConfiguration builder);
         //ClaimsPrincipal getclaimsprincipalfromexprisetime(string token, IConfiguration builder);
 

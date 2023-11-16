@@ -169,6 +169,35 @@ namespace It_Supporter.Controllers
             }
         }
 
+
+        [Authorize(Roles = "Admin")]
+        [HttpPatch("machines/finished")]
+        public async Task<IActionResult> FinishedMachine([FromQuery] int machineId, [FromQuery] int TechnicalId)
+        {
+            try
+            {
+                var rs = await _technical.finishedMachine(machineId, TechnicalId);
+
+                ProducerResponse producer = new ProducerResponse();
+                if (rs)
+                {
+                    producer.statuscode = 200;
+                    producer.message = "Update finished machine successfully!";
+                }
+                else
+                {
+                    producer.statuscode = 400;
+                    producer.message = "Update finished unsuccessfully!";
+                }
+                return Ok(producer);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
         [Authorize(Roles = "Admin")]
         [HttpGet("managerMoney")]
         public async Task<IActionResult> getManager([FromQuery] int idTech) {

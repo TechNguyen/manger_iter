@@ -11,11 +11,13 @@ using OtpNet;
 using StackExchange.Redis;
 using It_Supporter.DataRes;
 using Microsoft.AspNetCore.Identity;
+using System.Diagnostics;
 
 namespace It_Supporter.Controllers
 {
     [ApiController]
     [Route("/api/v1/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class UserAccountController : ControllerBase
     {
         private readonly ILogger<UserAccountController> _logger;
@@ -26,7 +28,7 @@ namespace It_Supporter.Controllers
 
         private UserAccountContext _UserAccountContext;
 
-        //private readonly ITokenService _tokenService;
+        private readonly ITokenService _tokenService;
 
         private readonly IConfiguration _configuration;
 
@@ -36,13 +38,15 @@ namespace It_Supporter.Controllers
             IEmaiLService emailservice,
             UserAccountContext _userAccountContext,
             IConfiguration configuration,
-            ITokenService tokenservice,)
+            ITokenService tokenservice,
+            IUserAccount userAccount)
         {
             _logger = logger;
             _UserAccountContext = _userAccountContext;
             _configuration = configuration;
             _emailservice = emailservice;
-            //_tokenService = tokenservice;
+            _userAccount = userAccount;
+            _tokenService = tokenservice;
 
         }
 
@@ -76,87 +80,109 @@ namespace It_Supporter.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        ////login with user
-        //[AllowAnonymous]
-        //[HttpPost("login")]
-        //public async Task<IActionResult> LoginAccount([FromBody] Login login)
-        //{
-        //    try {
-        //        var auth = await _userAccount.Login(login, _configuration);
-        //        AuthResult producer = new AuthResult();
-        //        producer.statuscode = 200;
-        //        producer.message = auth.message;
-        //        producer.AccessToken = auth.AccessToken;
-        //        producer.RefreshToken = auth.RefreshToken;
-        //        return Ok(producer);
-        //    } catch (Exception ex) {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
-        //// send Otp in Email
-        //[HttpPost("sendMail")]
-        //[ProducesResponseType(200, Type = typeof(ProducerResAddPost))]
-        //public async Task<IActionResult> SendMessageMail([FromBody] UserEmailOption userEmailOption) {
-        //    try {
-        //        await _emailservice.SendToTest(userEmailOption, _configuration);
-        //        ProducerResAddPost result = new ProducerResAddPost {
-        //            statuscode = 200,
-        //            message = "Send Email Successfully!"
-        //        };
-        //        return Ok(result);
-        //    } catch (Exception ex) {
-        //        return StatusCode(500, $"Error{ex.Message}");
-        //    }
-        //}
-        ////
-        //[HttpPost("otp")]
-        //public IActionResult GenterraOtpCode([FromQuery] string secretkey) {
-        //    var otp = _emailservice.GenerateOtp(secretkey);
-        //    return Ok(otp);
-        //}
-        //[HttpPost("checkOtp")]
-        //[ProducesResponseType(200, Type = typeof(ProducerResAddPost))]
-        //public IActionResult CheckOtpGen([FromBody] checkOtp check ) {
-        //    var otpcheck = _emailservice.CheckOtp(check, _configuration);
-        //    ProducerResAddPost resultcheck = new ProducerResAddPost();
-        //    if(otpcheck.statusCode == 200) {
-        //        resultcheck.statuscode = 200;
-        //        resultcheck.message = "Otp right";
-        //        return Ok(resultcheck);
-        //    }
-        //    else {
-        //        if(otpcheck.statusCode == 400) {
-        //            resultcheck.statuscode = 400;
-        //            resultcheck.message = "Otp fault";
-        //        } else {
-        //            resultcheck.statuscode = 405;
-        //            resultcheck.message = "Otp het han";
-        //        }
-        //        return NotFound(resultcheck);
-        //    };
-        //}
+        //login with user
+        [AllowAnonymous]
+        [HttpPost("login")]
+        public async Task<IActionResult> LoginAccount([FromBody] Login login)
+        {
+            try
+            {
+                var auth = await _userAccount.Login(login, _configuration);
+                AuthResult producer = new AuthResult();
+                producer.statuscode = auth.statuscode;
+                producer.message = auth.message;
+                producer.AccessToken = auth.AccessToken;
+                producer.RefreshToken = auth.RefreshToken;
+                return Ok(producer);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        // send Otp in Email
+        [HttpPost("sendMail")]
+        [ProducesResponseType(200, Type = typeof(ProducerResAddPost))]
+        public async Task<IActionResult> SendMessageMail([FromBody] UserEmailOption userEmailOption)
+        {
+            try
+            {
+                await _emailservice.SendToEmail(userEmailOption);
+                ProducerResAddPost result = new ProducerResAddPost
+                {
+                    statuscode = 200,
+                    message = "Send Email Successfully!"
+                };
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error {ex.Message}");
+            }
+        }
 
-        //[HttpPost("changePass")]
-        //[ProducesResponseType(200, Type = typeof(ProducerResAddPost))]
-        //[ProducesResponseType(400)]
-        //public IActionResult changePass ([FromBody] OtpSend otpSend) {
-        //    var isChange = _emailservice.ResetPassword(otpSend ,_configuration);
-        //    ProducerResAddPost resultchange = new ProducerResAddPost();
-        //    if(isChange) {
-        //        resultchange.statuscode = 200;
-        //        resultchange.message = "Change Password successfully";
-        //        return Ok(resultchange);
-        //    } else {
-        //        resultchange.statuscode = 400;
-        //        resultchange.message = "Change Password fault!";
-        //        return NotFound(resultchange);
-        //    }
-        //}
+        [HttpPost("sendmail-to-resetpass")]
+        public async Task<IActionResult> SendMailToResetPass([FromBody] string email)
+        {
+            try
+            {
+                
+                var res = await _emailservice.SendMailToReset(email); 
+
+                ProducerResponse producer = new ProducerResponse();
+                if(res)
+                {
+                    producer.statuscode = 200;
+                    producer.message = "Send Email successfully!";
+                } else
+                {
+                    producer.statuscode = 403;
+                    producer.message = "Send Email unsucessfully!";
+                }
+                return Ok(producer);
+            } catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [AllowAnonymous]
+        [HttpPost("changePass")]
+        [ProducesResponseType(200, Type = typeof(ProducerResAddPost))]
+        public async Task<IActionResult> changePass([FromBody] ResetPassword reset)
+        {
+            var isChange = await _emailservice.ChangePassWord(reset);
+            ProducerResAddPost resultchange = new ProducerResAddPost();
+            if (isChange.Succeeded)
+            {
+                resultchange.statuscode = 200;
+                resultchange.message = "Change Password successfully";
+                return Ok(resultchange);
+            }
+            else
+            {
+                resultchange.statuscode = 403;
+                if (isChange != null)
+                {
+                    string error = "";
+                    foreach (var err in isChange.Errors)
+                    {
+                        error += err.Description;
+                    }
+                    resultchange.message = error;
+                } else
+                {
+                    resultchange.message = "Change password has error!";
+                }
+                return NotFound(resultchange);
+            }
+        }
 
 
         //[HttpPost("token/refresh")]
-        //public async Task<IActionResult> RefreshToken([FromBody] RefreshToken refreshToken, IConfiguration configuration) {
-        //    try {
+        //public async Task<IActionResult> RefreshToken([FromBody] RefreshToken refreshToken, IConfiguration configuration)
+        //{
+        //    try
+        //    {
         //        var rs = await _tokenService.Refresh(refreshToken, configuration);
         //        AuthResult producer = new AuthResult();
         //        producer.message = rs.message;
@@ -165,7 +191,9 @@ namespace It_Supporter.Controllers
         //        producer.AccessToken = rs.AccessToken;
         //        producer.errors = rs.errors;
         //        return Ok(producer);
-        //    } catch (Exception ex) {
+        //    }
+        //    catch (Exception ex)
+        //    {
         //        return BadRequest(ex.Message);
         //    }
         //}

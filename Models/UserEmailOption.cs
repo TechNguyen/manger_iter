@@ -11,6 +11,6 @@ namespace It_Supporter.Models
         public string toEmails {set; get;}
         public string subject {set; get;}
         public string body {set; get;}
-        public List<KeyValuePair<string,int>> keyValuePairs {set; get;}
+        public List<KeyValuePair<string,string>> keyValuePairs {set; get;}
     }
 }

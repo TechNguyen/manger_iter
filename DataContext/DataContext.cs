@@ -17,7 +17,10 @@ namespace It_Supporter.DataContext
         public DbSet<Notification> Notification {set;get;}
         public DbSet<Images> Images {set;get;}
         public DbSet<Machines> Machines {get; set;}
-        public DbSet<TechEvents> TechEvents {set; get;} 
+        public DbSet<TechEvents> TechEvents {set; get;}
+
+
+        public DbSet<RefreshTokens> RefreshTokens { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
                 modelBuilder.Entity<Posts>()

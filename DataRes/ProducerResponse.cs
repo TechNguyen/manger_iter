@@ -8,6 +8,6 @@ namespace It_Supporter.DataRes
     public class ProducerResponse
     {
         public int? statuscode {set; get;}
-        public string? message {set; get;}
+        public string? message {set;  get;}
     }
 }

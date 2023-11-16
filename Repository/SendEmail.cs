@@ -13,6 +13,12 @@ using It_Supporter.Interfaces;
 using It_Supporter.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Identity;
+using RabbitMQ.Client;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using System.Resources;
+using Irony.Parsing;
+using ExcelDataReader.Log.Logger;
 
 namespace It_Supporter.Repository
 {
@@ -21,9 +27,14 @@ namespace It_Supporter.Repository
         private const string templatePath = @"Template/{0}.html";
         private readonly UserAccountContext _userAccountContext;
         private readonly SMTP _smtp;
-        public SendEmail(UserAccountContext userAccountContext, IOptions<SMTP> options ) {
+
+        private readonly UserManager<IdentityUser> _userManager;
+
+
+        public SendEmail(UserAccountContext userAccountContext, IOptions<SMTP> options , UserManager<IdentityUser> userManager) {
             _userAccountContext = userAccountContext;
-            _smtp = options.Value; 
+            _smtp = options.Value;
+            _userManager = userManager;
         }
         // doc noi dung gui email
         public string GetEmailBody(string templatename) {
@@ -31,7 +42,7 @@ namespace It_Supporter.Repository
             return bodyEmail;
         }
         //dynamic data in tempalte
-        public string UpdatePlaceHolder(string text, List<KeyValuePair<string, int>> keyValuePairs) {
+        public string UpdatePlaceHolder(string text, List<KeyValuePair<string, string>> keyValuePairs) {
             if(!string.IsNullOrEmpty(text) && keyValuePairs != null) {
                 foreach(var placeholder in keyValuePairs) {
                     if(text.Contains(placeholder.Key)) {
@@ -71,155 +82,63 @@ namespace It_Supporter.Repository
             };
             await smtpClient.SendMailAsync(mail);
         }
-        // generta otp
-        public OtpCode GenerateOtp(string secretkey) {
-            var totp = new Totp(Base32Encoding.ToBytes(secretkey), mode: OtpHashMode.Sha256, totpSize: 4);
-            DateTime expiration = DateTime.UtcNow.AddMinutes(2);
-            string otp = totp.ComputeTotp(expiration);
-            OtpCode otpCode = new OtpCode {
-                Otp = Int32.Parse(otp),
-                TimeStamp = DateTime.UtcNow
-            };
-            return otpCode;
-        }       
-        //send email
-        public async Task SendToTest(UserEmailOption userEmailOption, IConfiguration builder) {
-            var otpCode = GenerateOtp(builder["Secretkey"]);
-            List<KeyValuePair<string,int>> keyValuePairCode = new List<KeyValuePair<string, int>>(){
-                new KeyValuePair<string, int>("{{forget_otp}}",  otpCode.Otp)
-            };
-            userEmailOption.keyValuePairs = keyValuePairCode;
-            userEmailOption.body = UpdatePlaceHolder(GetEmailBody("TestEmail"), userEmailOption.keyValuePairs);
-            updateOtp(builder,userEmailOption,otpCode);
-            await SendToEmail(userEmailOption);
-        }
-
-        //add otp to db
-        public async Task updateOtp(IConfiguration builder, UserEmailOption userEmailOption, OtpCode otpCode) {
-            SqlConnection connection = new SqlConnection();
-            connection.ConnectionString = builder.GetConnectionString("DefaultConnection");
-            connection.Open(); 
-            string procedurename = "dbo.SP_GenerateOtp";
-            var emailParams = new SqlParameter("@email", SqlDbType.NVarChar) {
-                Direction = ParameterDirection.Input,
-                Value = userEmailOption.toEmails
-            };
-            var forGetOtp = new SqlParameter("@forgetOtp", SqlDbType.Int) {
-                Direction = ParameterDirection.Input,
-                Value = otpCode.Otp
-            };
-            var createatOtp = new SqlParameter("@createtime", SqlDbType.DateTime) {
-                Direction = ParameterDirection.Input,
-                Value = otpCode.TimeStamp
-            };
-            using (SqlCommand command = new SqlCommand(procedurename,connection))
-            {   
-                command.CommandType = CommandType.StoredProcedure;
-
-                command.Parameters.Add(emailParams);
-                command.Parameters.Add(forGetOtp);
-                command.Parameters.Add(createatOtp);
-
-                command.ExecuteNonQuery();
-            }
-        }
-
-
-        //get MaTv,Password new
-        public OtpSend CheckOtp(checkOtp check, IConfiguration builder) {
-            SqlConnection connection = new SqlConnection();
-            connection.ConnectionString = builder.GetConnectionString("DefaultConnection");
-            connection.Open();
-            string procedurename = "dbo.SP_checkOtp";
-            var emailParams = new SqlParameter("@email", SqlDbType.NVarChar, 255) {
-                Direction = ParameterDirection.Input,
-                Value = check.email
-            };
-            var forGetOtp = new SqlParameter("@forgetOtp", SqlDbType.Int) {
-                Direction = ParameterDirection.Input,
-                Value = check.Otp
-            };
-            var MatvParams = new SqlParameter("@MaTV", SqlDbType.Char, 10) {
-                Direction = ParameterDirection.Output,
-            };
-            var StatusCode = new SqlParameter("@statusCode", SqlDbType.Int) {
-                Direction = ParameterDirection.Output,
-            };
-            var createatOtp = new SqlParameter("@createat", SqlDbType.DateTime) {
-                Direction = ParameterDirection.Output,
-            };
-            OtpSend resetotp = new OtpSend();
-            using (SqlCommand command = new SqlCommand(procedurename,connection)) {
-                command.CommandType = CommandType.StoredProcedure;
-
-                command.Parameters.Add(emailParams);
-                command.Parameters.Add(forGetOtp);
-                command.Parameters.Add(MatvParams);
-                command.Parameters.Add(StatusCode);
-                command.Parameters.Add(createatOtp);
-
-
-                command.ExecuteNonQuery();
-                // check timeline
-                string MaTv = command.Parameters["@MaTV"].Value.ToString();
-                int status = (int)command.Parameters["@statusCode"].Value;
-                resetotp.email =check.email;
-                resetotp.MaTV = MaTv;
-                resetotp.Otp = check.Otp;
-                if(status == 200) {
-                    DateTime time = (DateTime)command.Parameters["@createat"].Value;
-                    if(DateTime.Compare(time.AddMinutes(2), DateTime.UtcNow) > 0) {
-                        resetotp.statusCode = status;
-                    } else {
-                        resetotp.statusCode = 405;
-                    }
-                }
-                resetotp.statusCode = status;
-            }
-            return resetotp;
-
-
-        }
-        //check Ma Otp
-        public bool ResetPassword(OtpSend otpSend, IConfiguration builder) {
-            SqlConnection connection = new SqlConnection();
-
-            connection.ConnectionString = builder.GetConnectionString("DefaultConnection");
-            connection.Open();
-
-            string procedurename = "dbo.SP_ResetPassword";
-
-            var emailParams = new SqlParameter("@email", SqlDbType.NVarChar, 355) {
-                Direction = ParameterDirection.Input,
-                Value = otpSend.email
-            };
-            var MatvParams = new SqlParameter("@MaTV", SqlDbType.Char, 10) {
-                Direction = ParameterDirection.Input,
-                Value = otpSend.MaTV
-            };
-            var PasswordParams = new SqlParameter("@password", SqlDbType.NVarChar) {
-                Direction = ParameterDirection.Input,
-                Value = otpSend.Password
-            };
-            var returncode = new SqlParameter("@returncode", SqlDbType.Int) {
-                Direction = ParameterDirection.Output,
-            };
-            using (SqlCommand command = new SqlCommand(procedurename,connection))
+        public async Task<bool> GereratePasswordEmailToken(IdentityUser user)
+        {
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            if (token != null)
             {
-                command.CommandType = CommandType.StoredProcedure;
+                UserEmailOption sendEmail = new UserEmailOption();
 
-                command.Parameters.Add(emailParams);
-                command.Parameters.Add(MatvParams);
-                command.Parameters.Add(PasswordParams);
-                command.Parameters.Add(returncode);
 
-                command.ExecuteNonQuery();
+                sendEmail.toEmails = user.Email;
+                var text = GetEmailBody("SendEmail");
+                sendEmail.subject = "This is email to verify email to reset password";
+                sendEmail.keyValuePairs = new List<KeyValuePair<string, string>>()
+                {
+                    new KeyValuePair<string, string>("{{user_name}}", user.UserName),
+                    new KeyValuePair<string, string>("{{link}}", token)
 
-                int status = (int)command.Parameters["@returncode"].Value;
-                if(status == 200)  {
-                     return true;
-                } 
+                };
+                sendEmail.body = UpdatePlaceHolder(text,sendEmail.keyValuePairs);
+                 await SendToEmail(sendEmail);
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> SendMailToReset(string email)
+        {
+            try
+            {
+                IdentityUser user = await _userManager.FindByEmailAsync(email);  
+                if (user == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    var res = await GereratePasswordEmailToken(user);
+                    return res;
+                }
+            } catch
+            {
                 return false;
+            }
+        }
+        public async Task<IdentityResult> ChangePassWord(ResetPassword resetmodel)
+        {
+            try
+            {
+                IdentityUser user = await _userManager.FindByIdAsync(resetmodel.userId);
+                if (user != null)
+                {
+                    var rs = await _userManager.ResetPasswordAsync(user, resetmodel.token, resetmodel.newPassword);
+                    return rs;
+                }
+                return null;
+            } catch (Exception ex )
+            {
+                return null;
             }
         }
     }

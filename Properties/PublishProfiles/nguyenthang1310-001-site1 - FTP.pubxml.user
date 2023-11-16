@@ -6,6 +6,11 @@ by editing this MSBuild file. In order to learn more about this please visit htt
 <Project>
   <PropertyGroup>
     <TimeStampOfAssociatedLegacyPublishXmlFile />
-    <EncryptedPassword />
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAnp6NTt6UrECiJ1ub6w99mgAAAAACAAAAAAAQZgAAAAEAACAAAABvZNiKsfFf3u6SAtxUJX16B/NASGxE4vFNDPZ5614m7AAAAAAOgAAAAAIAACAAAADfdjn0HJ+f9uYSfV365/HvQj3Z3wOi+tRWhDj07aDIqzAAAAD24Q+dYXCsTl/aghB6P/Erl59TC5USYJSZpUUqAWLDZS66KO20QZo6rCbE+lb780VAAAAAT0zV10fdcKwtJYg3fPql6bWTQVMgE00cGjIZCgIDYrGlV5Hn411M9fvl6XjdZYREE2higQWuEzukhxMBZppCNA==</EncryptedPassword>
   </PropertyGroup>
+  <ItemGroup>
+    <DestinationConnectionStrings Include="DefaultConnection">
+      <Value>Data Source=SQL8006.site4now.net%3bInitial Catalog=db_aa123e_nguyenthang1310%3bUser Id=db_aa123e_nguyenthang1310_admin%3bPassword=nguyenthang1306%40</Value>
+    </DestinationConnectionStrings>
+  </ItemGroup>
 </Project>

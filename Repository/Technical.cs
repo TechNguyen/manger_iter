@@ -12,7 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using NuGet.DependencyResolver;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
-
+using DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace It_Supporter.Repository
 {
@@ -92,6 +92,19 @@ namespace It_Supporter.Repository
                 }
                 return _context.SaveChanges() > 0 ? true : false;
             } catch {
+                return false;
+            }
+        }
+
+        public async Task<bool> finishedMachine(int machineId, int technicalId)
+        {
+            try
+            {
+                var machine = _context.Machines.FirstOrDefault(p => p.id == machineId && p.techId == technicalId);
+                machine.finished = 1;
+                return _context.SaveChanges() > 0 ? true : false;
+            } catch (Exception ex)
+            {
                 return false;
             }
         }

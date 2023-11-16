@@ -13,7 +13,6 @@ namespace It_Supporter.Controllers
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    [Authorize(Roles = "Admin")]
     public class ThanhvienController : ControllerBase
     {
         private readonly ILogger _logger;
@@ -29,21 +28,25 @@ namespace It_Supporter.Controllers
         }
         //layu danh sach tat ca tahnh vien
         [HttpGet("all")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetThanhViens([FromQuery] int page)
         {
-            if (page < 1)
+            try
             {
-                page = 1;
-            }
-            var data = _member.GetThanhViens(page);
-            Console.WriteLine(data);
-            if (!ModelState.IsValid)
+                if (page < 1)
+                {
+                    page = 1;
+                }
+                var data = _member.GetThanhViens(page);
+                return Ok(data);
+            } catch (Exception ex)
             {
-                return BadRequest(ModelState);
+                return BadRequest(ex.Message);
             }
-            return Ok(data);
+           
         }
         // lay danh sach thanh vien theo ma thanh vien
+        [Authorize(Roles = "Admin")]
         [HttpGet("{mtv}")]
         [ProducesResponseType(200, Type = typeof(ThanhVien))]
         [ProducesResponseType(400)]
@@ -80,8 +83,6 @@ namespace It_Supporter.Controllers
 
             return Ok(members);
         }
-
-
         //them moi 1 thanh vien
         [Authorize(Roles = "Admin")]
         [HttpPost("create")]

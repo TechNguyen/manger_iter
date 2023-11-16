@@ -28,5 +28,7 @@ namespace It_Supporter.Interfaces
         Task<int?> machineTech(int idTech);
         //total money
         Task<decimal?> manager_money(int techId);
+        //Finished machine
+        Task<bool> finishedMachine(int machineId, int technicalId);
     }
 }

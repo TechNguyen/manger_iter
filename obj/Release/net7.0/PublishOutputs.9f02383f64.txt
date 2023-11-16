@@ -61,6 +61,7 @@ E:\WorkSpace\Back C#\It-Supporter\obj\Release\net7.0\PubTmp\Out\Microsoft.Entity
 E:\WorkSpace\Back C#\It-Supporter\obj\Release\net7.0\PubTmp\Out\Microsoft.EntityFrameworkCore.Relational.dll
 E:\WorkSpace\Back C#\It-Supporter\obj\Release\net7.0\PubTmp\Out\Microsoft.EntityFrameworkCore.SqlServer.dll
 E:\WorkSpace\Back C#\It-Supporter\obj\Release\net7.0\PubTmp\Out\Microsoft.Extensions.Caching.SqlServer.dll
+E:\WorkSpace\Back C#\It-Supporter\obj\Release\net7.0\PubTmp\Out\Microsoft.Extensions.DependencyModel.dll
 E:\WorkSpace\Back C#\It-Supporter\obj\Release\net7.0\PubTmp\Out\Microsoft.Extensions.Features.dll
 E:\WorkSpace\Back C#\It-Supporter\obj\Release\net7.0\PubTmp\Out\Microsoft.Extensions.FileProviders.Embedded.dll
 E:\WorkSpace\Back C#\It-Supporter\obj\Release\net7.0\PubTmp\Out\Microsoft.Extensions.Identity.Core.dll
@@ -104,8 +105,11 @@ E:\WorkSpace\Back C#\It-Supporter\obj\Release\net7.0\PubTmp\Out\Otp.NET.dll
 E:\WorkSpace\Back C#\It-Supporter\obj\Release\net7.0\PubTmp\Out\Owin.dll
 E:\WorkSpace\Back C#\It-Supporter\obj\Release\net7.0\PubTmp\Out\Pipelines.Sockets.Unofficial.dll
 E:\WorkSpace\Back C#\It-Supporter\obj\Release\net7.0\PubTmp\Out\RabbitMQ.Client.dll
+E:\WorkSpace\Back C#\It-Supporter\obj\Release\net7.0\PubTmp\Out\Scrutor.dll
 E:\WorkSpace\Back C#\It-Supporter\obj\Release\net7.0\PubTmp\Out\SixLabors.Fonts.dll
 E:\WorkSpace\Back C#\It-Supporter\obj\Release\net7.0\PubTmp\Out\StackExchange.Redis.dll
+E:\WorkSpace\Back C#\It-Supporter\obj\Release\net7.0\PubTmp\Out\Swashbuckle.AspNetCore.Filters.dll
+E:\WorkSpace\Back C#\It-Supporter\obj\Release\net7.0\PubTmp\Out\Swashbuckle.AspNetCore.Filters.Abstractions.dll
 E:\WorkSpace\Back C#\It-Supporter\obj\Release\net7.0\PubTmp\Out\Swashbuckle.AspNetCore.Swagger.dll
 E:\WorkSpace\Back C#\It-Supporter\obj\Release\net7.0\PubTmp\Out\Swashbuckle.AspNetCore.SwaggerGen.dll
 E:\WorkSpace\Back C#\It-Supporter\obj\Release\net7.0\PubTmp\Out\Swashbuckle.AspNetCore.SwaggerUI.dll
