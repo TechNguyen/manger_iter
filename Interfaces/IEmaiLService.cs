@@ -14,8 +14,10 @@ namespace It_Supporter.Interfaces
         //doc noi dung email
         string GetEmailBody(string templatename);
         //sendemail
+
         Task<bool> SendMailToReset(string email);
         Task SendToEmail (UserEmailOption userEmailOption);
+        string UpdatePlaceHolder(string text, List<KeyValuePair<string, string>> keyValuePairs);
         Task<IdentityResult> ChangePassWord(ResetPassword resetmodel);
 
 

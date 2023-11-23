@@ -11,6 +11,9 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Swashbuckle.AspNetCore.Filters;
+using Hangfire;
+using It_Supporter.BackGroundJob;
+using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,21 +31,19 @@ builder.Services.AddControllers();
 builder.Services.AddSession(options => {
     options.IdleTimeout = TimeSpan.FromMinutes(60);
 });
-
-
 builder.Services.AddCors(options =>
-    {
-        options.AddDefaultPolicy(
-            builder =>
-            {
-                builder.WithOrigins("https://localhost:5100", "http://localhost:3000")
-                    .AllowAnyHeader()
-                    .AllowAnyMethod();
-                }
-            );
-        }
-    );
+{
+    options.AddPolicy("AllowAllOrigins",
+           builder =>
+           {
+               builder.AllowAnyOrigin()
+                      .AllowAnyMethod()
+                      .AllowAnyHeader();
+    });
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+//Hangfire
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -68,7 +69,7 @@ builder.Services.AddScoped<IComment, CommentRepo>();
 builder.Services.AddScoped<ICacheService, CacheService>();
 builder.Services.AddScoped<ITokenService, UserAccountRepo>();
 builder.Services.AddScoped<IExcel, Member>();
-
+builder.Services.AddTransient<IbirthDay, BirthdayJob>();
 
 builder.Services.Configure<SMTP>(builder.Configuration.GetSection("SMTPConfig"));
 builder.Services.AddDbContext<ThanhVienContext>(options =>
@@ -104,18 +105,31 @@ builder.Services.AddDefaultIdentity<IdentityUser>()
 
 
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(
+        options =>
+        {
+            options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+        }
+    
+    );
 builder.Services.AddSignalR();
 
+builder.Services.AddHangfire(config => config
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
+//dang ky cac job
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
+if (app.Environment.IsDevelopment())
+{
     app.UseSwagger();
     app.UseSwaggerUI();
-//}
+}
 
 
 app.UseSession();
@@ -130,6 +144,18 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.UseCors();
+app.UseCors("AllowAllOrigins");
+
+
+
+app.UseHangfireDashboard();
+
+app.MapHangfireDashboard();
+
+var server = new BackgroundJobServer();
+
+
+// Schedule a recurring background job
+RecurringJob.AddOrUpdate<IbirthDay>(e => e.sendMailHappyBirday(), Cron.Daily);
 
 app.Run();

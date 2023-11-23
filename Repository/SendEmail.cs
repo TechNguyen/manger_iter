@@ -27,7 +27,6 @@ namespace It_Supporter.Repository
         private const string templatePath = @"Template/{0}.html";
         private readonly UserAccountContext _userAccountContext;
         private readonly SMTP _smtp;
-
         private readonly UserManager<IdentityUser> _userManager;
 
 
@@ -52,7 +51,7 @@ namespace It_Supporter.Repository
             }
             return text;
         } 
-        // tao model to send
+        // tao model to send 1 mail
         public async Task SendToEmail(UserEmailOption userEmailOption) {
             // tao 1 mail message;
             MailMessage mail = new MailMessage {
@@ -82,6 +81,7 @@ namespace It_Supporter.Repository
             };
             await smtpClient.SendMailAsync(mail);
         }
+
         public async Task<bool> GereratePasswordEmailToken(IdentityUser user)
         {
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);

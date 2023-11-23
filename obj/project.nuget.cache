@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "m/+u5mqFhm7Waqy1+5zYzjPfSAAMDBnR951jqZWO6QcOes4ICNjLGofJ/yl98pqHcold6bjSQhd1zX8LqnqUzA==",
+  "dgSpecHash": "JkFCfPve+A8fP0s08MhsZFUBTtLNskTV+XONay28XHNAcAcv1VADGtBNG1psnlguX7aoa/+oBgP542mXsAHM7w==",
   "success": true,
   "projectFilePath": "E:\\WorkSpace\\Back C#\\It-Supporter\\It-Supporter.csproj",
   "expectedPackageFiles": [
@@ -19,6 +19,10 @@
     "C:\\Users\\Acer\\.nuget\\packages\\google.apis.oauth2.v2\\1.62.0.1869\\google.apis.oauth2.v2.1.62.0.1869.nupkg.sha512",
     "C:\\Users\\Acer\\.nuget\\packages\\google.apis.storage.v1\\1.60.0.2981\\google.apis.storage.v1.1.60.0.2981.nupkg.sha512",
     "C:\\Users\\Acer\\.nuget\\packages\\google.cloud.storage.v1\\4.6.0\\google.cloud.storage.v1.4.6.0.nupkg.sha512",
+    "C:\\Users\\Acer\\.nuget\\packages\\hangfire.aspnetcore\\1.8.6\\hangfire.aspnetcore.1.8.6.nupkg.sha512",
+    "C:\\Users\\Acer\\.nuget\\packages\\hangfire.core\\1.8.6\\hangfire.core.1.8.6.nupkg.sha512",
+    "C:\\Users\\Acer\\.nuget\\packages\\hangfire.netcore\\1.8.6\\hangfire.netcore.1.8.6.nupkg.sha512",
+    "C:\\Users\\Acer\\.nuget\\packages\\hangfire.sqlserver\\1.8.6\\hangfire.sqlserver.1.8.6.nupkg.sha512",
     "C:\\Users\\Acer\\.nuget\\packages\\humanizer\\2.14.1\\humanizer.2.14.1.nupkg.sha512",
     "C:\\Users\\Acer\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Acer\\.nuget\\packages\\humanizer.core.af\\2.14.1\\humanizer.core.af.2.14.1.nupkg.sha512",
@@ -142,7 +146,7 @@
     "C:\\Users\\Acer\\.nuget\\packages\\microsoft.extensions.features\\7.0.10\\microsoft.extensions.features.7.0.10.nupkg.sha512",
     "C:\\Users\\Acer\\.nuget\\packages\\microsoft.extensions.fileproviders.abstractions\\7.0.0\\microsoft.extensions.fileproviders.abstractions.7.0.0.nupkg.sha512",
     "C:\\Users\\Acer\\.nuget\\packages\\microsoft.extensions.fileproviders.embedded\\7.0.13\\microsoft.extensions.fileproviders.embedded.7.0.13.nupkg.sha512",
-    "C:\\Users\\Acer\\.nuget\\packages\\microsoft.extensions.hosting.abstractions\\2.2.0\\microsoft.extensions.hosting.abstractions.2.2.0.nupkg.sha512",
+    "C:\\Users\\Acer\\.nuget\\packages\\microsoft.extensions.hosting.abstractions\\3.0.0\\microsoft.extensions.hosting.abstractions.3.0.0.nupkg.sha512",
     "C:\\Users\\Acer\\.nuget\\packages\\microsoft.extensions.identity.core\\7.0.13\\microsoft.extensions.identity.core.7.0.13.nupkg.sha512",
     "C:\\Users\\Acer\\.nuget\\packages\\microsoft.extensions.identity.stores\\7.0.13\\microsoft.extensions.identity.stores.7.0.13.nupkg.sha512",
     "C:\\Users\\Acer\\.nuget\\packages\\microsoft.extensions.logging\\7.0.0\\microsoft.extensions.logging.7.0.0.nupkg.sha512",

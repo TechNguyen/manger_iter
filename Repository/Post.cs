@@ -13,6 +13,8 @@ using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using Google.Apis.Storage.v1.Data;
 using Microsoft.AspNetCore.Identity;
+using Notification = It_Supporter.Models.Notification;
+using It_Supporter.DataRes;
 
 namespace It_Supporter.Repository
 {
@@ -20,6 +22,9 @@ namespace It_Supporter.Repository
     {
         private readonly ThanhVienContext _context;
         private readonly Microsoft.Extensions.Hosting.IHostingEnvironment _env;
+
+        private readonly IConfiguration _builder;
+        private readonly INotiFication _noti;
         private string apiKey = "AIzaSyAjJChu_wQMel-dk0m_KXzZ7rx4SXaXwwg";
         private string authDomain= "it-supporter-34e94.firebaseapp.com";
         private string projectId = "it-supporter-34e94";
@@ -27,10 +32,17 @@ namespace It_Supporter.Repository
 
         private readonly string AuthEmail = "ndt13102003@gmail.com";
         private readonly string AuthPass = "leluuly1306";
-        public Post(ThanhVienContext context, Microsoft.Extensions.Hosting.IHostingEnvironment env)
+        public Post(ThanhVienContext context,
+            Microsoft.Extensions.Hosting.IHostingEnvironment env,
+            INotiFication noti,
+            IConfiguration builder
+            
+            )
         {
             _context = context;
             _env = env;
+            _noti = noti;
+            _builder = builder;
         }
         public async Task<bool> addNewPost(PostsUpload post)
         {
@@ -55,8 +67,21 @@ namespace It_Supporter.Repository
                     newpost.urlImage = _urlImage; 
                 }
                 _context.Posts.Add(newpost);
-                _context.SaveChanges();
-                return true;
+                int row = _context.SaveChanges();
+                if(row > 0)
+                {
+                    //add notification
+                    Notification noti = new Notification();
+                    noti.isRead = 0;
+                    noti.CreateDate = DateTime.Now;
+                    noti.NotiHeader = "Post notification!";
+                    noti.NotiBody = "Admin has add new post!";
+                    noti.FromUserId = post.authorId;
+                    noti.ToUserId = "1";
+                    bool res = await _noti.pushNotiWhenPost(noti);
+                    return res;
+                }
+                return false;
             } catch (Exception ex) {
                 return false;
             }
@@ -160,6 +185,68 @@ namespace It_Supporter.Repository
         public Task<Posts> GetPosts()
         {
             throw new NotImplementedException();
+        }
+
+
+
+
+        public async Task<ProducerResManagerPosts> managerPosts(Year year, IConfiguration builder)
+        {
+            try
+            {
+                ProducerResManagerPosts res = new ProducerResManagerPosts();
+                res.listPosts = new List<inforPosts>();
+
+
+                SqlConnection con = new SqlConnection();
+
+                
+                string conenction = builder.GetConnectionString("DefaultConnection");
+                con.ConnectionString = conenction;
+                string producername = "dbo.Sp_managerPost";
+
+                using(SqlCommand cmd = new SqlCommand(producername, con)) {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    DataTable dt = new DataTable();
+                    using(SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                    {
+
+                        cmd.Parameters.AddWithValue("@year", year.year);
+
+
+                        SqlParameter countofyear = new SqlParameter();
+                        countofyear.ParameterName = "@countofyear";
+                        countofyear.SqlDbType = SqlDbType.Int;
+                        countofyear.Direction= ParameterDirection.Output;
+                        cmd.Parameters.Add(countofyear);
+
+
+                        con.Open();
+
+                        cmd.ExecuteNonQuery();
+
+
+                        adapter.Fill(dt);
+
+                        res.countPosts = int.Parse(cmd.Parameters["@countofyear"].Value.ToString());
+                        foreach (DataRow row in dt.Rows)
+                        {
+                            inforPosts infor = new inforPosts();
+                            infor.numPosts = int.Parse(row["numPosts"].ToString());
+                            infor.month_create = int.Parse(row["month_create"].ToString());
+
+                            res.listPosts.Add(infor);
+                        }
+                        res.statuscode = 200;
+                        res.message = "Get manager post succesfully!";
+                        con.Close();
+                        return res;
+                    }
+                }
+            } catch(Exception ex)
+            {
+                return null;
+            }
         }
     }
 }

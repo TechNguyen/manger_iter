@@ -49,7 +49,7 @@ namespace It_Supporter.Services
             //     return false;
             // }
 
-            var redis = ConnectionMultiplexer.Connect(options);
+            var redis = ConnectionMultiplexer.Connect("localhost:6379");
             _cachedatabase = redis.GetDatabase();
             var ft = _cachedatabase.FT();
             var json = _cachedatabase.JSON();

@@ -3,6 +3,7 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
 using ExcelDataReader;
 using It_Supporter.DataContext;
+using It_Supporter.DataRes;
 using It_Supporter.Interfaces;
 using It_Supporter.Models;
 using It_Supporter.Services;
@@ -150,54 +151,49 @@ namespace It_Supporter.Repository
         }
 
         // lay ra thong so cho admin
-        public List<inforNumber> GetInforNumber()
+        public async Task<ProducerResManagerMember> GetInforNumber(IConfiguration builder)
         {
-            var result = new List<inforNumber>();
+
+            DataTable dt = new DataTable();
+            ProducerResManagerMember member = new ProducerResManagerMember();
+            member.informembers = new List<inforNumber>();
             SqlConnection connection = new SqlConnection();
-            connection.ConnectionString = "Data Source=LAPTOP-32QQSE7C\\SQLEXPRESS;Initial Catalog=ITSUPPPORTER;Persist Security Info=True;User ID=sa;Password=nguyenthang1306;TrustServerCertificate=true";
-            connection.Open();
+            connection.ConnectionString = builder.GetConnectionString("DefaultConnection");
             string procedureName = "dbo.SP_Count_Member";
-            var countParams = new SqlParameter("@counthanhvien", SqlDbType.Int)
-            {
-                Direction = ParameterDirection.Output
-            };
-            var firstyear = new SqlParameter("@firstyearthanhvien", SqlDbType.Int)
-            {
-                Direction = ParameterDirection.Output
-            };
-            var secondyear = new SqlParameter("@secondyearthanhvien", SqlDbType.Int)
-            {
-                Direction = ParameterDirection.Output
-            };
-            var thirdyear = new SqlParameter("@thirdyearthanhvien", SqlDbType.Int)
-            {
-                Direction = ParameterDirection.Output
-            };
+            
             using (SqlCommand command = new SqlCommand(procedureName, connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.Add(countParams);
-                command.Parameters.Add(firstyear);
-                command.Parameters.Add(secondyear);
-                command.Parameters.Add(thirdyear);
-
-                command.ExecuteNonQuery();
-                int outputValue = (int)command.Parameters["@counthanhvien"].Value;
-                int firtValue = (int)command.Parameters["@firstyearthanhvien"].Value;
-                int secondValue = (int)command.Parameters["@secondyearthanhvien"].Value;
-                int thirdValue = (int)command.Parameters["@thirdyearthanhvien"].Value;
-
-                inforNumber tmpRecord = new inforNumber()
+                using (SqlDataAdapter adapter = new SqlDataAdapter(command))
                 {
-                    CountMember = outputValue,
-                    firstyearMember = firtValue,
-                    secondyearMember = secondValue,
-                    thirdyearMember = thirdValue,   
-                };
-                result.Add(tmpRecord);
+                    connection.Open();
+
+                    command.ExecuteNonQuery();
+
+                    adapter.Fill(dt);
+
+
+
+                    foreach(DataRow row in dt.Rows)
+                    {
+                        inforNumber infor = new inforNumber();
+                        infor.Khoahoc = row["Khoahoc"].ToString().Trim();
+                        infor.countMember = int.Parse(row["countMember"].ToString());
+
+                        member.informembers.Add(infor);
+                    }
+                    if(member.informembers.Count > 0)
+                    {
+                        member.statuscode = 200;
+                        member.message = "Successfully!";
+                    } else
+                    {
+                        member.statuscode = 401;
+                        member.message = "Error";
+                    }
+                    return member;
+                }
             }
-            return result;
-            
         }
 
         public bool MemBerExit(string mtv)
@@ -312,5 +308,7 @@ namespace It_Supporter.Repository
             }
             return _context.SaveChanges() > 0 ? true : false;
         }
+
+     
     }
 }

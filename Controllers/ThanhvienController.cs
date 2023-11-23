@@ -18,17 +18,35 @@ namespace It_Supporter.Controllers
         private readonly ILogger _logger;
         private readonly IMember _member;
         private readonly IExcel _excel;
+
+        private readonly IConfiguration _builder;
         private ThanhVienContext _context;
-        public ThanhvienController(IMember member, ILogger<ThanhvienController> logger, ThanhVienContext context, IExcel excel)
+        public ThanhvienController(IMember member,
+            ILogger<ThanhvienController> logger,
+            ThanhVienContext context,
+            IExcel excel,
+            IConfiguration builder)
         {
             _member = member;
             _logger = logger;
             _context = context;
             _excel = excel;
+            _builder = builder;
         }
+        //thong ke so thanh vien
+        //public async Task<IActionResult> GetManagerMember()
+        //{
+        //    try
+        //    {
+
+        //        return Ok();
+        //    } catch (Exception ex) {  
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
         //layu danh sach tat ca tahnh vien
         [HttpGet("all")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetThanhViens([FromQuery] int page)
         {
             try
@@ -146,18 +164,25 @@ namespace It_Supporter.Controllers
                 return Ok("Successfully Delete!");
             }
         }
-        [HttpGet("dashboard")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
         // count for admin
-        public IActionResult ReportMember()
+        [HttpGet("manager")]
+        public async Task <IActionResult> ReportMember()
         {
-            var result = _member.GetInforNumber();
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                var result = await _member.GetInforNumber(_builder);
+                if(result.statuscode == 200)
+                {
+                    return Ok(result);
+                } else
+                {
+                    return BadRequest(result.message);
+                }
+            } catch (Exception ex)
+            {
+                return NotFound(ex.Message);  
             }
-            return Ok(result);
+            
         }
         // approve member to old member
         [Authorize(Roles = "Admin")]

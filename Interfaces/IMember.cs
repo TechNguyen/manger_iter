@@ -1,4 +1,6 @@
-﻿using It_Supporter.Models;
+﻿using It_Supporter.DataRes;
+using It_Supporter.Models;
+using System.Data;
 
 namespace It_Supporter.Interfaces
 {
@@ -13,6 +15,6 @@ namespace It_Supporter.Interfaces
         bool DeleteMember(string mtv);
         Task<bool> ApprovedMemberOld(string khoa);
         Task<bool> ApprovedNewMember(string khoa);
-        List<inforNumber> GetInforNumber();
+        Task<ProducerResManagerMember> GetInforNumber(IConfiguration builder);
     }
 }

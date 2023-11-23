@@ -1,4 +1,5 @@
-﻿using It_Supporter.Models;
+﻿using It_Supporter.DataRes;
+using It_Supporter.Models;
 using It_Supporter.Repository;
 
 namespace It_Supporter.Interfaces
@@ -13,5 +14,6 @@ namespace It_Supporter.Interfaces
         Task<string> UploadPost(FileUpload filename);
         // admin  
         Task<ICollection<Posts>> sortPost(DateSortPost dateSortPost);
+        Task<ProducerResManagerPosts?> managerPosts(Year year, IConfiguration _builder);
     }
 }

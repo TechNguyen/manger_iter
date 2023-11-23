@@ -18,8 +18,6 @@ namespace It_Supporter.DataContext
         public DbSet<Images> Images {set;get;}
         public DbSet<Machines> Machines {get; set;}
         public DbSet<TechEvents> TechEvents {set; get;}
-
-
         public DbSet<RefreshTokens> RefreshTokens { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,16 +39,24 @@ namespace It_Supporter.DataContext
                     .Property(p => p.createat)
                     .HasDefaultValueSql("Current_Timestamp");
 
-                modelBuilder.Entity<Machines>()
-                    .Property(e => e.deleted)
-                    .HasDefaultValueSql("0");
-                
+            modelBuilder.Entity<Machines>()
+                .Property(e => e.deleted)
+                .HasDefaultValueSql("0");
                 modelBuilder.Entity<Machines>()
                     .Property(p => p.finished)
                     .HasDefaultValueSql("0");
                 modelBuilder.Entity<Machines>()
                     .Property(e => e.serviceCharger)
                     .HasDefaultValueSql("0.00");
+            modelBuilder.Entity<Notification>()
+                    .Property(e => e.CreateDate)
+                    .HasDefaultValueSql("Current_Timestamp");
+            modelBuilder.Entity<Notification>()
+                    .Ignore(e => e.NotiId)
+                    .Property(e => e.NotiId)
+                    .UseIdentityColumn()
+                    .ValueGeneratedOnAdd();
+
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

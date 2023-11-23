@@ -25,7 +25,7 @@ namespace It_Supporter.Repository
             private readonly UserAccountContext _context;
 
 
-        private readonly ThanhVienContext _thanhviencontext;
+            private readonly ThanhVienContext _thanhviencontext;
             private readonly UserManager<IdentityUser> _usermanager;
 
             private readonly RoleManager<IdentityRole> _rolemanager;
@@ -217,10 +217,7 @@ namespace It_Supporter.Repository
                     refreshtoken.RefreshToken = refreshToken;
                     refreshtoken.ExpriseTime = DateTime.Now.AddDays(3);
                     _thanhviencontext.RefreshTokens.Add(refreshtoken);
-
-                    int count = await _thanhviencontext.SaveChangesAsync();
-
-                    Console.WriteLine(count);           
+                    int count = _thanhviencontext.SaveChanges();   
                     return authResult;
                 }
             }    
@@ -237,7 +234,7 @@ namespace It_Supporter.Repository
         //        var principal = GetClaimsPrincipalFromExpriseTime(rftoken.AccessToken, builder);
         //        string username = principal.Identity.Name;
         //        Console.Write(username);
-        //        var user = await _context.UserAccount.SingleOrDefaultAsync(p => p.Username == username);
+        //        var user = await _usermanager.FindByNameAsync(username);
         //        if (user is null || user.RefreshToken != rftoken.refreshToken || user.RefreshTokenExpireTime <= DateTime.Now)
         //        {
         //            return null;

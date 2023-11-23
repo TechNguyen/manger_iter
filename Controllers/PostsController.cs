@@ -5,6 +5,7 @@ using It_Supporter.Models;
 using It_Supporter.Repository;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Owin.Security.Provider;
 using StackExchange.Redis;
 
@@ -107,6 +108,23 @@ namespace It_Supporter.Controllers
                 return BadRequest(ex.Message);
             }
         }
-    
+
+
+        [HttpPost("manager")]
+        public async Task<IActionResult> managerPost([FromBody] Year year)
+        {
+            try
+            {
+                var rs = await _post.managerPosts(year, _configuration);
+                if(rs.statuscode == 200)
+                {
+                    return Ok(rs);
+                }
+                return Ok(rs) ;
+            } catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }    
     }
 }
